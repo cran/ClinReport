@@ -1,0 +1,33 @@
+# TODO: Add comment
+# 
+# Author: jfcollin
+###############################################################################
+
+
+#' R documentation for ClinReport package
+#' 
+#' It enables to create easily a statistical reporting in Microsoft Word documents with tables in a pretty format according to "clinical standards".
+#' 
+#' It can also be used outside the scope of clinical trials, for any statistical reporting in Word. 
+#' 
+#' Descriptive tables for quantitative statistics (mean, median, max etc..) and qualitative statistics (frequencies and percentages) 
+#' are available and pretty tables of Least Square Means of LM, LME and GLM models coming from \code{emmeans} function in emmeans package are 
+#' also available.
+#' 
+#' The package works with officer and flextable packages to export the outputs
+#' into Microsoft Word documents.   
+#' 
+#' There are 2 main functions for descriptive reporting : \code{report.quanti} and \code{report.quali}
+#' 
+#' There is 1 unique function for model LS means reporting: \code{report.lsmeans}
+#'  
+#' Each of those 3 functions creates a desc object that can be used with \code{report.doc} to export the result(s) 
+#' into a Word document.
+#' 
+#' There is 1 unique function to export the output(s) into a Word document: \code{report.doc}
+#' 
+#' Future versions will include "standard" graphic reporting, anova table reporting and statistics tables specific for Adverse Events reporting.  
+#'     
+#' @docType package
+#' @name ClinReport
+NULL
