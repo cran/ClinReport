@@ -6,7 +6,7 @@
 \title{Fake clinical data example}
 \format{A data frame}
 \source{
-from pure imagination
+From pure imagination
 }
 \usage{
 data

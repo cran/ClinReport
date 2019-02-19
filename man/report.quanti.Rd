@@ -2,7 +2,7 @@
 % Please edit documentation in R/report.quanti.R
 \name{report.quanti}
 \alias{report.quanti}
-\title{Creates a desc object of "quantitative" statistics}
+\title{Creates a desc object for "quantitative" statistics reporting}
 \usage{
 report.quanti(data, y, x1 = NULL, x2 = NULL, y.label = y,
   round = 2, total = F, scientific = F, digits = NULL,
@@ -17,21 +17,21 @@ report.quanti(data, y, x1 = NULL, x2 = NULL, y.label = y,
 
 \item{x2}{Character indicating a factor in the data (levels will be displayed in lines)}
 
-\item{y.label}{Character. Indicates the label for y parameter}
+\item{y.label}{Character Indicates the label for y parameter}
 
 \item{round}{Numeric to indicate how to round statistics}
 
 \item{total}{Logical to indicate if a "Total" column should be added}
 
-\item{scientific}{Logical to indicate if statistics should be displayed in scientific notations}
+\item{scientific}{Logical Indicates if statistics should be displayed in scientific notations or not}
 
-\item{digits}{Numeric (used if scientifc=T) to indicate how many digits to use in scientific notation}
+\item{digits}{Numeric (used if scientifc=TRUE) to indicate how many digits to use in scientific notation}
 
-\item{at.row}{a character. Used to space the results (see example below)}
+\item{at.row}{Character Used to space the results (see examples)}
 
-\item{subjid}{Character. Indicates the column in which there is the subject Id to add the number of subjects in the column header if x1 and x2 are not null.}
+\item{subjid}{Character Indicates the column in which there is the subject Id to add the number of subjects in the column header if x1 and x2 are not null.}
 
-\item{geomean}{Boolean. If yes geometric mean is calculated  instead of arithmetic mean: (exp(mean(log(x),na.rm=T))) fpr x>0}
+\item{geomean}{Logical If yes geometric mean is calculated  instead of arithmetic mean: (exp(mean(log(x),na.rm=T))) fpr x>0}
 }
 \value{
 A desc object.
@@ -43,7 +43,7 @@ Returns quantitative descriptive statistics such as mean, median, standard devia
 \details{
 This function computes and reports quantitative statistics on \code{y}. And can gives the statistics by level of two factors (\code{x1}
 in columns and/or \code{x2} in rows). 
-See the example to show the results. If \code{total=T}, the last column is the statistics
+See the example to show the results. If \code{total=TRUE}, the last column is the statistics
 performed overall levels of \code{x1} for each levels of \code{x2}. 
 Quantiles are calculated using type 3 (SAS) algorithms.
 
@@ -58,7 +58,7 @@ data(data)
 
 # Quantitative statistics with no factor
 
-report.quanti(data=data,y="y_numeric",y.label="Awesome results")
+report.quanti(data=data,y="y_numeric",total=TRUE,y.label="Awesome results")
 
 #' # Quantitative statistics with no factor with geometric mean (option geomean=TRUE)
 
@@ -87,11 +87,16 @@ x2="TIMEPOINT",total=TRUE,at.row="TIMEPOINT")
 
 # Add number of subjects in headers (option subjid)
 
-report.quanti(data=data,y="y_numeric",x1="GROUP",
+tab=report.quanti(data=data,y="y_numeric",x1="GROUP",
 x2="TIMEPOINT",total=TRUE,at.row="TIMEPOINT",subjid="SUBJID")
 
+# Print tab output
+tab
+
+#Getting raw output
+tab$raw.output
 
 }
 \seealso{
-\code{\link{report.quali}} \code{\link{report.doc}}
+\code{\link{report.quali}} \code{\link{report.doc}} \code{\link{desc}}
 }

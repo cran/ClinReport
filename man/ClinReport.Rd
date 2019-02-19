@@ -23,9 +23,11 @@ There are 2 main functions for descriptive reporting : \code{report.quanti} and 
 There is 1 unique function for model LS means reporting: \code{report.lsmeans}
  
 Each of those 3 functions creates a desc object that can be used with \code{report.doc} to export the result(s) 
-into a Word document.
+into a Word document. This is the unique function to export the output(s) into a Word document.
 
-There is 1 unique function to export the output(s) into a Word document: \code{report.doc}
-
-Future versions will include "standard" graphic reporting, anova table reporting and statistics tables specific for Adverse Events reporting.
+Future versions will improve the "standard" graphic reporting, 
+the anova table reporting and statistics tables specific for Adverse Events reporting. Survival models will also be included.
+}
+\author{
+Jean-Francois COLLIN
 }

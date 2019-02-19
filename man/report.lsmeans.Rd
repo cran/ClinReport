@@ -2,38 +2,54 @@
 % Please edit documentation in R/report.lsmeans.R
 \name{report.lsmeans}
 \alias{report.lsmeans}
-\title{Returns in a pretty format, the LS means of a model
-(It's not that fantastic but it's handy)}
+\title{Creates a desc object for 'LS Means' statistics reporting}
 \usage{
-report.lsmeans(lsm, x1.name = "treatment", x2.name = NULL,
-  x3.name = NULL, variable.name = "Statistics", at.row = NULL,
-  infer = c(T, T), type = "link")
+report.lsmeans(lsm, x1 = "treatment", x2 = NULL, x3 = NULL, data,
+  variable.name = "Statistics", at.row = NULL, infer = c(T, T),
+  type = "link", contrast = F, contrast.name = "contrast",
+  x1.name = "treatment", x2.name = NULL, x3.name = NULL)
 }
 \arguments{
-\item{lsm}{an emmGrid object (result of a emmeans call)}
+\item{lsm}{emmGrid object (result of a \code{emmeans} call)}
 
-\item{x1.name}{Character indicating a factor in the data. Levels will be displayed in columns}
+\item{x1}{Character Mandatory. Indicating a factor in the data (can be an intercept: see example). Levels will be displayed in columns}
 
-\item{x2.name}{Character indicating a factor in the data. Levels will be displayed in rows}
+\item{x2}{Character indicating a factor in the data. Levels will be displayed in rows}
 
-\item{x3.name}{Character indicating a factor in the data. Levels will be displayed in rows}
+\item{x3}{Character indicating a factor in the data. Levels will be displayed in rows}
+
+\item{data}{Data.frame object from which the Least Square means are coming from}
 
 \item{variable.name}{Character. The label of the column which indicates the statistics reported.}
 
 \item{at.row}{Character. Passed to spacetable function. Used to space the results per levels of the mentioned variable}
 
-\item{infer}{pass to summary.emmGrid function. Can be c(T,T) c(T,F) c(F,T) c(F,F) or T or F}
+\item{infer}{A vector of one or two logical values. Passed to \code{summary.emmGrid} function.}
 
-\item{type}{Character. pass to summary.emmGrid function. can be "link" or "response"}
+\item{type}{Character. Type of prediction desired. Passed to summary.emmGrid function. Can be "link" or "response"}
+
+\item{contrast}{Logical. Specify if the contrast function has been used after the emmeans function (see examples)}
+
+\item{contrast.name}{Character. Corresponds to the label of the column in which the contrasts are specified (see example).
+Default value is 'contrast'.}
+
+\item{x1.name}{Character. Deprecated (replaced by x1)}
+
+\item{x2.name}{Character. Deprecated (replaced by x2)}
+
+\item{x3.name}{Character Deprecated (replaced by x3)}
 }
 \value{
-A desc object that can be used for the report.doc function.
+A desc object that can be used by the \code{report.doc} function.
 }
 \description{
-Create nice reporting table of lsmeans (or emmeans if you prefer, whatever...).
+Creates a desc object for "LS Means" statistics reporting.
 }
 \details{
-This function has been created with love and passion.
+You can produce formatted Least Square Means table for up to 3 factors.
+It doesn't work for quantitative covariates.
+
+ See examples below.
 }
 \examples{
 
@@ -44,23 +60,32 @@ data(data)
 
 #Simple lm model
 
-luke=lm(Petal.Width~Species,data=iris)
-vador=emmeans(luke,~Species)
-report.lsmeans(vador,"Species")
+mod=lm(Petal.Width~Species,data=iris)
+raw.lsm=emmeans(mod,~Species)
+report.lsmeans(raw.lsm,"Species",data=iris)
 
-# In case of just one intercept, x1.name="X1"
-lucky=glm(Species~1,data=iris,family=binomial)
-strike=emmeans(lucky,~1)
-report.lsmeans(strike,"X1")
+# In case of just one intercept you must use a workaround...
+iris$int=1
+mod=glm(Species~int,data=iris,family=binomial)
+raw.lsm=emmeans(mod,~int)
+iris$int=as.factor(iris$int)
+report.lsmeans(raw.lsm,"int",data=iris)
 
 #Mixed model example using lme4
 
-james=lmer(y_numeric~GROUP+TIMEPOINT+GROUP*TIMEPOINT+(1|SUBJID),data=data) 
-bond=emmeans(james,~GROUP|TIMEPOINT)
-report.lsmeans(lsm=bond,x1.name="GROUP",x2.name="TIMEPOINT",at.row="TIMEPOINT")
+mod=lmer(y_numeric~GROUP+TIMEPOINT+GROUP*TIMEPOINT+(1|SUBJID),data=data) 
+raw.lsm=emmeans(mod,~GROUP|TIMEPOINT)
+report.lsmeans(lsm=raw.lsm,x1="GROUP",x2="TIMEPOINT",at.row="TIMEPOINT",data=data)
 
+
+# GLM model with specific contrast
+
+warp.lm <- lm(breaks ~ wool+tension+wool:tension, data = warpbreaks)
+warp.emm <- emmeans(warp.lm, ~ tension | wool)
+contr=contrast(warp.emm, "trt.vs.ctrl", ref = "M")
+report.lsmeans(lsm=contr,x1="wool",data=warpbreaks,contrast=TRUE,at.row="contrast")
 
 }
 \seealso{
-\code{\link{report.quali}} \code{\link{emmeans}} \code{\link{report.doc}}
+\code{\link{report.quali}} \code{\link{emmeans}} \code{\link{report.doc}} \code{\link{desc}}
 }

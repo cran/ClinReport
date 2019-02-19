@@ -2,7 +2,7 @@
 % Please edit documentation in R/report.quali.R
 \name{report.quali}
 \alias{report.quali}
-\title{Creates a desc object of "qualitative" statistics (frequencies and percentages) in a pretty format}
+\title{Creates a desc object for "qualitative" statistics (frequencies and percentages) reporting}
 \usage{
 report.quali(data, y = NULL, x1 = NULL, x2 = NULL, y.label = y,
   x2.label = NULL, y.levels.label = "Levels", total = F, round = 2,
@@ -23,27 +23,31 @@ report.quali(data, y = NULL, x1 = NULL, x2 = NULL, y.label = y,
 
 \item{y.levels.label}{Character. Indicates the label of the column in which the levels of y are displayed}
 
-\item{total}{Boolean. Indicates if a column Total should be added or not}
+\item{total}{Logical Indicates if a column Total should be added or not}
 
-\item{round}{Integer. Indicates the number of digits to round percentages}
+\item{round}{Integer Indicates the number of digits to round percentages}
 
 \item{at.row}{Character. Pass to spacetable function. Used to space the results (see example below)}
 
-\item{percent.col}{Boolean. By default it is set to T to indicate that column percentages should be reported. If set to False, row percentages are reported.}
+\item{percent.col}{Logical By default it is set to T to indicate that column percentages should be reported. If set to False, row percentages are reported.}
 
-\item{subjid}{Character. Indicates in the data.frame the name of the column used to identify the Id of the subjects. If not null, it adds in the headers the number of unique subject per levels of x1 or y (if x1 is null).}
+\item{subjid}{Character Indicates in the data.frame the name of the column used to identify the Id of the subjects. If not null, it adds in the headers the number of unique subject per levels of x1 or y (if x1 is null).}
 }
 \value{
 A desc object
 }
 \description{
-Compute and report frequencies and percentages by levels of \code{y} (in lines) and by levels of \code{x1} (in columns)
-and \code{x2} in lines.
+Compute and report frequencies and percentages by levels of \code{y} (in rows) and by levels of \code{x1} (in columns)
+and \code{x2} in rows.
 }
 \details{
 This function computes and reports qualitative statistics by level of \code{y} and by level of \code{x1} (if not null)
-and \code{x2} (if not null). See examples to show the results. If \code{total=T}, the last column is the statistics
-performed overall levels of the explicative variables x1. Note that missing values are counted in the percentages.
+and \code{x2} (if not null).
+
+See examples to show the results. If \code{total=T}, the last column is the statistics
+performed overall levels of the explicative variables x1.
+
+Note that missing values are counted in the calculation of the percentages.
 }
 \examples{
 
@@ -76,12 +80,16 @@ x2="TIMEPOINT",at.row="TIMEPOINT",subjid="SUBJID",round=1)
 
 
 # Qualitative statistics with a response with more than one levels
-report.quali(data=data,y="y_poisson",x1="GROUP",
+tab=report.quali(data=data,y="y_poisson",x1="GROUP",
 x2="TIMEPOINT",at.row="TIMEPOINT",subjid="SUBJID",round=1)
 
+# Print formatted results
+tab
 
 
+#Getting raw output (unformatted) 
+tab$raw.output
 }
 \seealso{
-\code{\link{report.quanti}}  \code{\link{report.doc}}
+\code{\link{report.quanti}}  \code{\link{report.doc}} \code{\link{desc}}
 }

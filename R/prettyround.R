@@ -11,13 +11,12 @@
 
 #'Return a rounded vector with equal number of digits
 #' 
-#'
 #' @param p Vector of numerical values
-#' @param r A numeric value that indicates the number of digits to round to
+#' @param r Integer indicates the number of digits to round to
 #' 
 #' @description
 #' \code{prettyround} 
-#' Return a formatted version of numeric vector.
+#' Return a formatted version of the numeric vector.
 #' 
 #' 
 #' @details

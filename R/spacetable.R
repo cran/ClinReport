@@ -7,7 +7,7 @@
 #' 
 #'
 #' @param tab a data.frame. Normally, the output part of a desc object
-#' @param at.row Numeric or Factor variable
+#' @param at.row Numeric (between 1 and \code{ncol(tab)}) or Character (a column name of tab)
 #' 
 #' 
 #' @description
@@ -19,7 +19,7 @@
 #' Used internally into \code{report.lsmeans}, \code{report.quanti} and \code{report.quali}
 #' 
 #' @return  
-#' A data.frame with some space for christ sake!
+#' A data.frame with some space between levels of the variable specified by \code{at.row}
 #' 
 #' @seealso \code{\link{report.quanti}}  \code{\link{report.quali}}  \code{\link{report.lsmeans}}
 #' 

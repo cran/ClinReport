@@ -9,10 +9,10 @@ spacetable(tab, at.row = 6)
 \arguments{
 \item{tab}{a data.frame. Normally, the output part of a desc object}
 
-\item{at.row}{Numeric or Factor variable}
+\item{at.row}{Numeric (between 1 and \code{ncol(tab)}) or Character (a column name of tab)}
 }
 \value{
-A data.frame with some space for christ sake!
+A data.frame with some space between levels of the variable specified by \code{at.row}
 }
 \description{
 \code{spacetable} 

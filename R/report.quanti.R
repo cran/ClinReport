@@ -2,7 +2,7 @@
 # Author: jfcollin
 ###############################################################################
 
-#' Creates a desc object of "quantitative" statistics
+#' Creates a desc object for "quantitative" statistics reporting
 #' 
 #'
 #' @param data Data.frame object
@@ -11,12 +11,12 @@
 #' @param x2 Character indicating a factor in the data (levels will be displayed in lines)
 #' @param round Numeric to indicate how to round statistics
 #' @param total Logical to indicate if a "Total" column should be added
-#' @param scientific Logical to indicate if statistics should be displayed in scientific notations
-#' @param digits Numeric (used if scientifc=T) to indicate how many digits to use in scientific notation
-#' @param at.row a character. Used to space the results (see example below)
-#' @param y.label Character. Indicates the label for y parameter
-#' @param subjid Character. Indicates the column in which there is the subject Id to add the number of subjects in the column header if x1 and x2 are not null.
-#' @param geomean Boolean. If yes geometric mean is calculated  instead of arithmetic mean: (exp(mean(log(x),na.rm=T))) fpr x>0
+#' @param scientific Logical Indicates if statistics should be displayed in scientific notations or not
+#' @param digits Numeric (used if scientifc=TRUE) to indicate how many digits to use in scientific notation
+#' @param at.row Character Used to space the results (see examples)
+#' @param y.label Character Indicates the label for y parameter
+#' @param subjid Character Indicates the column in which there is the subject Id to add the number of subjects in the column header if x1 and x2 are not null.
+#' @param geomean Logical If yes geometric mean is calculated  instead of arithmetic mean: (exp(mean(log(x),na.rm=T))) fpr x>0
 
 #' @description
 #' \code{report.quanti} 
@@ -26,7 +26,7 @@
 #' @details
 #' This function computes and reports quantitative statistics on \code{y}. And can gives the statistics by level of two factors (\code{x1}
 #' in columns and/or \code{x2} in rows). 
-#' See the example to show the results. If \code{total=T}, the last column is the statistics
+#' See the example to show the results. If \code{total=TRUE}, the last column is the statistics
 #' performed overall levels of \code{x1} for each levels of \code{x2}. 
 #' Quantiles are calculated using type 3 (SAS) algorithms.
 #' 
@@ -38,7 +38,7 @@
 #' @return  
 #' A desc object.
 #' 
-#' @seealso \code{\link{report.quali}} \code{\link{report.doc}}
+#' @seealso \code{\link{report.quali}} \code{\link{report.doc}} \code{\link{desc}}
 
 #' @examples
 #'  
@@ -46,7 +46,7 @@
 #' 
 #' # Quantitative statistics with no factor
 #' 
-#' report.quanti(data=data,y="y_numeric",y.label="Awesome results")
+#' report.quanti(data=data,y="y_numeric",total=TRUE,y.label="Awesome results")
 #' 
 #' #' # Quantitative statistics with no factor with geometric mean (option geomean=TRUE)
 #' 
@@ -75,9 +75,14 @@
 #' 
 #' # Add number of subjects in headers (option subjid)
 #' 
-#' report.quanti(data=data,y="y_numeric",x1="GROUP",
+#' tab=report.quanti(data=data,y="y_numeric",x1="GROUP",
 #' x2="TIMEPOINT",total=TRUE,at.row="TIMEPOINT",subjid="SUBJID")
 #' 
+#' # Print tab output
+#' tab
+#' 
+#' #Getting raw output
+#' tab$raw.output
 #' 
 #' @import reshape2
 #' 
@@ -113,8 +118,7 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 	if(class(data)!="data.frame") stop("data argument should be a data.frame. Thank you for your comprehension")
 	if(class(y)!="character") stop("Dear user. y argument should be a character.  Thank you for your comprehension")
 	if(!any(colnames(data)==y)) stop("y argument should be in data colnames. Thank you for your comprehension")
-	if(total==T & is.null(x1) & is.null(x2)) message("Since x1 and x2 are NULL, it's not necessary to set total=T. In fact it doesn't make any sense... So it's not taken into account in the end. Thank you for your comprehension")
-	
+
 	
 	if(!is.logical(total))		stop("Argument total argument must be logical")
 	if(!is.numeric(digits) & !is.null(digits)) stop("Argument digits must be numeric")
@@ -123,11 +127,10 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 	if(!is.numeric(data[,y])) stop(paste("y should be a numeric variable"))
 	if(!is.numeric(round)) stop(paste("round should be numeric"))
 	
-	# if x1 and x2 are NULLwe use the function with temporary intercepts
+	# if x1 and x2 are NULL we use the function with temporary intercepts
 	
-	if(is.null(x1)) x1="int";data$int=1
-	if(is.null(x2)) x2="int";data$int=1
 	
+	if(is.null(x1) & !is.null(x2)) stop("If you have only one explicative variable, then use x1 and not x2 argument")
 	
 	################################
 	# start function
@@ -135,9 +138,22 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 	
 	# group data by factors
 	
+	if(is.null(x1) & is.null(x2))
+	{
+		by_GROUP=data 
+		
+	}
 	
-	by_GROUP=data %>% group_by_(x1)%>% group_by_(x2,add=T)	
+	if(!is.null(x1) & is.null(x2))
+	{
+		by_GROUP=data %>% group_by_(x1)
+	}
 	
+	if(!is.null(x1) & !is.null(x2))
+	{
+		by_GROUP=data %>% group_by_(x1)%>% group_by_(x2,add=T)	
+		
+	}
 	
 	# define statistics
 	
@@ -195,6 +211,9 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 	
 	stat=data.frame(by_GROUP %>% summarise_at(.funs=funs_(dots=stat_list),.vars=y))
 	
+	# Save raw output for graphics
+	raw.stat=stat
+	
 	# format outputs
 	
 	ind=which(sapply(stat,class)!="factor") 
@@ -219,10 +238,28 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 	
 	# reshape 
 	
-	m=melt(data=stat,id.vars=c(x1,x2),variable.name="Statistics")
-	stat2=dcast(m,as.formula(paste0(x2,"+","Statistics","~",x1)),value.var="value")
-	if(any(colnames(stat2)=="1.00"))colnames(stat2)[colnames(stat2)=="1.00"]=y.label
+	m=melt(data=stat,id.vars=c(x1,x2),variable.name="Statistics",value.name ="value")
 	
+	if(!is.null(x1) & !is.null(x2))
+	{
+		stat2=dcast(m,as.formula(paste0(x2,"+","Statistics","~",x1)),
+				value.var="value")
+	}
+	
+	if(!is.null(x1) & is.null(x2))
+	{
+		stat2=dcast(m,as.formula(paste0("Statistics","~",x1)),
+				value.var="value")
+	}
+	
+	if(is.null(x1) & is.null(x2))
+	{
+		stat2=m
+	}
+	
+	
+	colnames(stat2)[colnames(stat2)=="value"]=y.label
+
 	levels(stat2$Statistics)[levels(stat2$Statistics)=="N"]="N"
 	if(geomean)
 	{
@@ -237,6 +274,9 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 	levels(stat2$Statistics)[levels(stat2$Statistics)=="missing"]="Missing"
 	levels(stat2$Statistics)[levels(stat2$Statistics)=="q1_q3"]="[Q1;Q3]"
 	
+	if(!is.null(x2)) stat2=stat2[order(stat2[,x2],stat2$Statistics),]
+	if(is.null(x2)) stat2=stat2[order(stat2$Statistics),]
+	
 	
 # add Total, if requested
 	
@@ -244,18 +284,16 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 	{
 		if(is.null(x2))
 		{
-			data$intercept=1
-			temp=report.quanti(data=data,y=y,x1="intercept")$output
-			stat2=cbind(stat2,Total=temp[,2])
+
+			temp=report.quanti(data=data,y=y,y.label="Total")$output
+			stat2=merge(stat2,temp,by="Statistics")
 		}
 		
 		if(!is.null(x2))
 		{
-			data$intercept=1
-			temp=report.quanti(data=data,y=y,x1=x2,x2="intercept")$output
-			temp$intercept=NULL
-			temp=melt(temp,id.vars="Statistics")
-			stat2=cbind(stat2,Total=temp[,3])
+			temp=report.quanti(data=data,y=y,x1=x2)$output
+			temp=melt(temp,id.vars="Statistics",variable.name=x2,value.name = "Total")
+			stat2=merge(stat2,temp,by=c(x2,"Statistics"))
 		}
 		
 	}
@@ -271,8 +309,8 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 						"[Q1;Q3]","[Min;Max]","Missing"))
 	}
 	
-	stat2=stat2[order(stat2[,x2],stat2$Statistics),]
-	
+	if(!is.null(x2)) stat2=stat2[order(stat2[,x2],stat2$Statistics),]
+	if(is.null(x2)) stat2=stat2[order(stat2$Statistics),]
 	
 
 	
@@ -299,9 +337,32 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 				
 			}
 		}
+		
+		if(!is.null(x1) & is.null(x2))
+		{
+			
+			if(!any("%in%"(colnames(data),subjid))) stop(paste0(subjid," variable is not in data colnames"))
+			
+			if(!total)
+			{
+				N=tapply(data[,subjid],data[,x1],function(x)length(unique(x)))
+				colnames(stat2)[-c(1)]=paste0(colnames(stat2)[-c(1)]," (N=",N,")")
+				
+			}
+			
+			
+			if(total)
+			{
+				N=tapply(data[,subjid],data[,x1],function(x)length(unique(x)))
+				N=c(N,sum(N))
+				colnames(stat2)[-c(1)]=paste0(colnames(stat2)[-c(1)]," (N=",N,")")
+				
+			}
+		}
+		
+		
+		
 	}
-	
-	if(any("%in%"(colnames(stat2),"int"))) stat2=stat2[,-which("%in%"(colnames(stat2),"int"))]
 	
 	
 	
@@ -320,13 +381,12 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 		nbcol=2
 	}
 	
-	if(x1=="int") x1=NULL
-	if(x2=="int") x2=NULL
-	
-	stat2=ClinReport::desc(output=stat2,total=total,nbcol=nbcol,y=y,x1=x1,x2=x2,at.row=at.row,
-			subjid=subjid,type.desc="quanti",type=NULL,y.label=y.label)
-	
 
+	stat2=ClinReport::desc(output=stat2,total=total,nbcol=nbcol,y=y,x1=x1,x2=x2,at.row=at.row,
+			subjid=subjid,type.desc="quanti",type=NULL,y.label=y.label,
+			raw.output=raw.stat)
+	
+	
 	
 	return(stat2)
 }

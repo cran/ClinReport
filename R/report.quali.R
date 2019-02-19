@@ -2,7 +2,7 @@
 # Author: jfcollin
 ###############################################################################
 
-#' Creates a desc object of "qualitative" statistics (frequencies and percentages) in a pretty format
+#' Creates a desc object for "qualitative" statistics (frequencies and percentages) reporting
 #'
 #' @param data a data.frame object
 #' @param y Character indicating a factor in the data
@@ -11,26 +11,30 @@
 #' @param y.label Character indicating the label for y parameter (only used when x1 and x2 are NULL)
 #' @param y.levels.label Character. Indicates the label of the column in which the levels of y are displayed
 #' @param x2.label Character indicating the label for x2 parameter, only if x2 is not null
-#' @param total Boolean. Indicates if a column Total should be added or not
-#' @param round  Integer. Indicates the number of digits to round percentages
+#' @param total Logical Indicates if a column Total should be added or not
+#' @param round  Integer Indicates the number of digits to round percentages
 #' @param at.row Character. Pass to spacetable function. Used to space the results (see example below)
-#' @param percent.col Boolean. By default it is set to T to indicate that column percentages should be reported. If set to False, row percentages are reported.
-#' @param subjid Character. Indicates in the data.frame the name of the column used to identify the Id of the subjects. If not null, it adds in the headers the number of unique subject per levels of x1 or y (if x1 is null).
+#' @param percent.col Logical By default it is set to T to indicate that column percentages should be reported. If set to False, row percentages are reported.
+#' @param subjid Character Indicates in the data.frame the name of the column used to identify the Id of the subjects. If not null, it adds in the headers the number of unique subject per levels of x1 or y (if x1 is null).
 #' 
 #' @description
-#' Compute and report frequencies and percentages by levels of \code{y} (in lines) and by levels of \code{x1} (in columns)
-#' and \code{x2} in lines.
+#' Compute and report frequencies and percentages by levels of \code{y} (in rows) and by levels of \code{x1} (in columns)
+#' and \code{x2} in rows.
 #' 
 #' 
 #' @details
 #' This function computes and reports qualitative statistics by level of \code{y} and by level of \code{x1} (if not null)
-#' and \code{x2} (if not null). See examples to show the results. If \code{total=T}, the last column is the statistics
-#' performed overall levels of the explicative variables x1. Note that missing values are counted in the percentages.
+#' and \code{x2} (if not null).
+#' 
+#' See examples to show the results. If \code{total=T}, the last column is the statistics
+#' performed overall levels of the explicative variables x1.
+#' 
+#' Note that missing values are counted in the calculation of the percentages.
 
 #' @return  
 #' A desc object
 #' 
-#' @seealso \code{\link{report.quanti}}  \code{\link{report.doc}} 
+#' @seealso \code{\link{report.quanti}}  \code{\link{report.doc}} \code{\link{desc}}
 
 #' @examples
 #' 
@@ -63,11 +67,15 @@
 #' 
 #' 
 #' # Qualitative statistics with a response with more than one levels
-#' report.quali(data=data,y="y_poisson",x1="GROUP",
+#' tab=report.quali(data=data,y="y_poisson",x1="GROUP",
 #' x2="TIMEPOINT",at.row="TIMEPOINT",subjid="SUBJID",round=1)
 #' 
+#' # Print formatted results
+#' tab
 #' 
 #' 
+#' #Getting raw output (unformatted) 
+#' tab$raw.output
 
 
 #' @export
@@ -216,6 +224,9 @@ report.quali=function(data,y=NULL,x1=NULL,x2=NULL,y.label=y,
 		freq=merge(freq,n,by=c("Var1","Var3"))
 	}
 	
+	
+	raw.freq=freq
+	
 	freq$percent=paste0("(",format(round(100*(freq$Freq.x/freq$Freq.y),round), nsmall = round),"%)")
 	freq$percent=gsub(" ","",freq$percent,fixed=T)
 	freq$value=paste0(freq$Freq.x,freq$percent)
@@ -326,7 +337,8 @@ report.quali=function(data,y=NULL,x1=NULL,x2=NULL,y.label=y,
 	
 	freq=ClinReport::desc(output=freq,total=total,nbcol=nbcol,y=y,x1=x1,x2=x2,
 			at.row=at.row,
-			subjid=subjid,type.desc="quali",type=NULL,y.label=y.label)
+			subjid=subjid,type.desc="quali",type=NULL,y.label=y.label,
+			raw.output=raw.freq)
 	
 	
 	freq

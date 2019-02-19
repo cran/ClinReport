@@ -6,7 +6,8 @@
 \usage{
 desc(output = NULL, total = NULL, nbcol = NULL, y = NULL,
   x1 = NULL, x2 = NULL, at.row = NULL, subjid = NULL,
-  type.desc = NULL, type = NULL, y.label = NULL)
+  type.desc = NULL, type = NULL, y.label = NULL, type.mod = NULL,
+  raw.output = NULL, contrast = NULL, contrast.name = NULL)
 }
 \arguments{
 \item{output}{a data.frame object}
@@ -21,21 +22,31 @@ desc(output = NULL, total = NULL, nbcol = NULL, y = NULL,
 
 \item{x2}{Character indicating a factor in the data}
 
-\item{at.row}{Character. Pass to spacetable function. Used to space the results (see example below)}
+\item{at.row}{Character. Pass to spacetable function. Used to space the results (see \code{\link{spacetable}})}
 
-\item{subjid}{Character. Indicates in the data.frame the name of the column used to identify the Id of the subjects. If not null, it adds in the headers the number of unique subject per levels of x1 or y (if x1 is null).}
+\item{subjid}{Character. Indicates in the data.frame the name of the column used to identify the Id of the subjects.
+If not null, it adds in the headers the number of unique subject per levels of x1 or y (if x1 is null).}
 
-\item{type.desc}{Character. can be "quali" "quanti" or "quali_quanti"}
+\item{type.desc}{Character. Can be "quali" "quanti" "lsmeans" or "quali_quanti"}
 
 \item{type}{Character. Can be "response" or "link"}
 
 \item{y.label}{Character. The label for y response variable}
+
+\item{type.mod}{Character. The type of models the LS means are coming from (can be 'quali' or 'quanti')}
+
+\item{raw.output}{Data.frame. The raw statistics unformatted from \code{report.quali}, \code{report.quanti} and  \code{report.lsmeans}}
+
+\item{contrast}{Logical. Specify if the contrast function has been used after the emmeans function}
+
+\item{contrast.name}{Character. Corresponds to the label of the column in which the contrasts are specified
+Default value is 'contrast'.}
 }
 \value{
 A desc object
 }
 \description{
-Create a desc object.
+Creates a desc object.
 }
 \details{
 No detail.
@@ -44,7 +55,7 @@ No detail.
 
 \dontrun{
 
-#No example
+x=desc()
 
 }
 

@@ -19,7 +19,7 @@
 #' @details
 #' 
 #' It's only possible to regroup statistics for desc objects with one and only one explicative variable.
-#' So it works if and only if \code{x1} argument in \code{x} and \code{y} objects is not NULL and is the same 
+#' So it works if and only if \code{x1} argument in \code{x} and \code{y} objects are not NULL, are the same 
 #' and if \code{x2} argument is NULL in both \code{x} and \code{y} objects.
 #' 
 #' The function takes the y.label argument of object \code{x} and \code{y} respectively
@@ -33,6 +33,9 @@
 #' @examples
 #' 
 #' data(data)
+#' 
+#' #The argument y.label is stored in the desc object and 
+#' # only used after by the regroup function
 #' 
 #'tab1=report.quanti(data=data,y="y_numeric",
 #'		x1="GROUP",subjid="SUBJID",y.label="Y numeric")

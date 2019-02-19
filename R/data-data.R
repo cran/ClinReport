@@ -12,7 +12,7 @@
 #' 
 #' @docType data
 #'
-#' @source from pure imagination
+#' @source From pure imagination
 #' 
 #' @keywords datasets
 #' 

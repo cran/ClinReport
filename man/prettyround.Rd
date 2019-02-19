@@ -9,14 +9,14 @@ prettyround(p, r = 3)
 \arguments{
 \item{p}{Vector of numerical values}
 
-\item{r}{A numeric value that indicates the number of digits to round to}
+\item{r}{Integer indicates the number of digits to round to}
 }
 \value{
 Return a formatted vector with rounded numbers
 }
 \description{
 \code{prettyround} 
-Return a formatted version of numeric vector.
+Return a formatted version of the numeric vector.
 }
 \details{
 No detail.
