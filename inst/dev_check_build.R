@@ -9,9 +9,15 @@
 # sep=.Platform$path.sep))
 #
 #
+
 Sys.setenv(PATH = paste(Sys.getenv("PATH"),
 				"C:/Users/jfcollin/AppData/Local/Pandoc",
 				sep=.Platform$path.sep))
+
+Sys.setenv(PATH = paste(Sys.getenv("PATH"),
+				"D:/qpdf-8.4.0/bin",
+				sep=.Platform$path.sep))
+
 #
 
 
@@ -22,24 +28,40 @@ library(rmarkdown)
 
 setwd("C:\\Users\\jfcollin\\git")
 
-roxygenize("C:\\Users\\jfcollin\\git")
-
-check(args ="--as-cran")
-
-
-install()
-build()
-
-
 
 
 ###############################################
 #  readme
 ###############################################
 
-render("C:\\Users\\jfcollin\\git\\ClinReport\\inst\\README.Rmd")
-#shell.exec("C:\\Users\\jfcollin\\git\\ClinReport\\README.html")
+render("C:\\Users\\jfcollin\\git\\README.Rmd")
+#shell.exec("C:\\Users\\jfcollin\\git\\README.html")
 
+###############################################
+# Vignette
+###############################################
+
+render("C:\\Users\\jfcollin\\git\\vignettes\\clinreport-vignette.Rmd")
+#shell.exec("C:\\Users\\jfcollin\\git\\vignettes\\clinreport-vignette.html")
+devtools::build_vignettes()
+
+###############################################
+# Check install and build
+###############################################
+
+
+
+roxygenize("C:\\Users\\jfcollin\\git")
+
+
+#usethis::use_build_ignore("notes")
+
+check(args ="--as-cran")
+
+
+install()
+install(build_vignettes =T)
+build(path = "C:\\Users\\jfcollin\\Google Drive\\R packages")
 
 
 

@@ -104,9 +104,9 @@
 #' # Create your stats tables and graphics
 #' #####################
 #' 
-#' #' Quatitative stats (2 explicative variables) ##################################
-#' #' since it's a big enough table, we don't want it to overlap 2 pasges
-#' #' so we split it in two with split.desc function
+#' # Quatitative stats (2 explicative variables) ##################################
+#' # since it's a big enough table, we don't want it to overlap 2 pasges
+#' # so we split it in two with split.desc function
 #'
 #'tab1=report.quanti(data=data,y="y_numeric",
 #'		x1="GROUP",x2="TIMEPOINT",at.row="TIMEPOINT",subjid="SUBJID")
@@ -262,7 +262,8 @@
 #'doc=body_add_par(doc,"Descriptive statistics", style = "heading 2")
 #'
 #'doc=report.doc(tab1.1,title="Quantitative statistics (2 explicative variables) (Table 1/2)",
-#'		colspan.value="Treatment group",doc=doc,init.numbering=T)
+#'		colspan.value="Treatment group",doc=doc,init.numbering=T,
+#' page.break=F)
 #'
 #'doc=report.doc(tab1.2,title="Quantitative statistics (2 explicative variables) (Table 2/2)",
 #'		colspan.value="Treatment group",doc=doc)
@@ -488,7 +489,12 @@ report.doc.desc=function(table,title,colspan.value=NULL,doc=NULL,
 	
 	ft=hline(ft, border = fp_border(width = 2), part = "header" )
 	ft=hline_top(ft, border = fp_border(width = 2), part = "header" )
-	ft=hline_bottom(ft, border = fp_border(width = 2), part = "body" )
+	
+#	ft=hline_bottom(ft, border = fp_border(width = 2), part = "body" )
+
+	ft=add_footer_row(ft,top=FALSE, values ="",colwidths=ncol(output))
+	ft=hline_bottom(ft, border = fp_border(width = 2), part = "footer")
+	
 	ft=vline(ft, j =1:nb.col,border = fp_border(width = 1),part = "body")
 	
 	# merge first column in case there are repetitions
@@ -504,7 +510,7 @@ report.doc.desc=function(table,title,colspan.value=NULL,doc=NULL,
 	
 	ft=height_all(ft, height=0.1, part = "body")
 	ft=height_all(ft, height=0.3, part = "header")
-	
+	ft=height_all(ft, height=0.1, part = "footer")
 	
 	# add foot note for LS Means to indicates the type of
 	# response if it's a qualitative model
@@ -514,8 +520,7 @@ report.doc.desc=function(table,title,colspan.value=NULL,doc=NULL,
 		if(table$type.mod=="quali")
 		{			
 			ft <- add_footer_row(ft,top=FALSE, values =footnote,colwidths=ncol(output))
-			ft <- merge_at(ft,j=1:ncol(output), part = "footer")
-			ft <- fontsize(ft, size = 8, part = "footer")
+			ft <- fontsize(ft, size = font.size-1, part = "footer")
 			ft <-height_all(ft, height=0.3, part = "footer")
 		}
 		

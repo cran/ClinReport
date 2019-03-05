@@ -36,11 +36,20 @@ lineplot with or without confidence intervals (see examples in report.doc functi
 * Add the add.mad option in report.quanti so the mad is not systematically reported
 
 
+# ClinReport 0.9.1.9
 
 
+## Issues
 
+* Correction of nbcol argument when x2=NULL and x1!=NULL in report.quali function
+* Correction of a footenote issue for ls-means reporting of GLM model
 
+## Enhancement
 
+* function report.quanti: stop using group_by_: replaced by group_by
+* function report.quanti: remove the funs_ in summarise_at
+* Add a vignette in the package
+* Add a footer_row and hline to all report.doc outputs
 
 
 

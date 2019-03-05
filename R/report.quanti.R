@@ -91,7 +91,7 @@
 #' 
 #' @import reshape2
 #' 
-#' @importFrom dplyr %>% summarise_at group_by_ funs_
+#' @importFrom dplyr %>% summarise_at group_by 
 #' 
 #' @export
 
@@ -122,18 +122,17 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 	
 	if(is.null(y)) stop("y argument cannot be NULL. Thank you for your comprehension")
 	if(class(data)!="data.frame") stop("data argument should be a data.frame")
+	
 	if(class(y)!="character") stop("Dear user. y argument should be a character")
 	if(!any(colnames(data)==y)) stop("y argument should be in data colnames")
-	
+	if(!is.numeric(data[,y])) stop(paste0(as.character(substitute(data)),"[,'",y,"']","should be a numeric variable"))
 	
 	if(!is.logical(total))		stop("Argument total argument must be logical")
 	if(!is.numeric(digits) & !is.null(digits)) stop("Argument digits must be numeric")
 	
 	
-	if(!is.numeric(data[,y])) stop(paste("y should be a numeric variable"))
-	if(!is.numeric(round)) stop(paste("round should be numeric"))
 	
-	# if x1 and x2 are NULL we use the function with temporary intercepts
+	if(!is.numeric(round)) stop(paste("round should be numeric"))
 	
 	
 	if(is.null(x1) & !is.null(x2)) stop("If you have only one explicative variable, then use x1 and not x2 argument")
@@ -152,13 +151,18 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 	
 	if(!is.null(x1) & is.null(x2))
 	{
-		by_GROUP=data %>% group_by_(x1)
+		x1=check.x(data,x1)
+		
+		by_GROUP=data %>% group_by(!!as.name(x1))
 	}
 	
 	if(!is.null(x1) & !is.null(x2))
 	{
-		by_GROUP=data %>% group_by_(x1)%>% group_by_(x2,add=T)	
 		
+		x1=check.x(data,x1)
+		x2=check.x(data,x2)
+		
+		by_GROUP=data %>% group_by(!!as.name(x1))%>% group_by(!!as.name(x2),add=T)	
 	}
 	
 	# define statistics
@@ -220,15 +224,14 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 	
 	# compute statistics
 	
-	stat=data.frame(by_GROUP %>% summarise_at(.funs=funs_(dots=stat_list),.vars=y))
+	stat=data.frame(by_GROUP %>% summarise_at(.funs=stat_list,.vars=y))
 	
 	# Save raw output for graphics
 	raw.stat=stat
 	
 	# format outputs
 	
-	ind=which(sapply(stat,class)!="factor") 
-	ind=ind[!"%in%"(ind,which(colnames(stat)=="N" | colnames(stat)=="missing"))] 
+	ind=which(sapply(stat,class)=="numeric") 
 	stat[ind]=format(round(stat[ind],round),nsmall=round,scientific=scientific,digits=digits)
 	
 	# Regroup stat
@@ -350,7 +353,7 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 							"[Q1;Q3]","[Min;Max]","Missing"))
 		}
 	}
-
+	
 	
 	if(!is.null(x2)) stat2=stat2[order(stat2[,x2],stat2$Statistics),]
 	if(is.null(x2)) stat2=stat2[order(stat2$Statistics),]
