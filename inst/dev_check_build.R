@@ -28,11 +28,15 @@ library(rmarkdown)
 
 setwd("C:\\Users\\jfcollin\\git")
 
+roxygenize("C:\\Users\\jfcollin\\git")
 
 
 ###############################################
 #  readme
 ###############################################
+
+#use_cran_badge()
+#use_lifecycle_badge("stable")
 
 render("C:\\Users\\jfcollin\\git\\README.Rmd")
 #shell.exec("C:\\Users\\jfcollin\\git\\README.html")
@@ -41,8 +45,15 @@ render("C:\\Users\\jfcollin\\git\\README.Rmd")
 # Vignette
 ###############################################
 
-render("C:\\Users\\jfcollin\\git\\vignettes\\clinreport-vignette.Rmd")
+render("C:\\Users\\jfcollin\\git\\vignettes\\clinreport_vignette_get_started.Rmd")
+render("C:\\Users\\jfcollin\\git\\vignettes\\clinreport_modify_outputs.Rmd")
+render("C:\\Users\\jfcollin\\git\\vignettes\\clinreport_graphics.Rmd")
+
 #shell.exec("C:\\Users\\jfcollin\\git\\vignettes\\clinreport-vignette.html")
+#shell.exec("C:\\Users\\jfcollin\\git\\vignettes\\clinreport_modify_outputs.html")
+#shell.exec("C:\\Users\\jfcollin\\git\\vignettes\\clinreport_graphics.html")
+
+
 devtools::build_vignettes()
 
 ###############################################
@@ -51,25 +62,47 @@ devtools::build_vignettes()
 
 
 
-roxygenize("C:\\Users\\jfcollin\\git")
 
-
-#usethis::use_build_ignore("notes")
+# to avoid the check of the docs directory
+# when check as cran
+#usethis::use_build_ignore("docs")
 
 check(args ="--as-cran")
 
 
-install()
+#install()
 install(build_vignettes =T)
 build(path = "C:\\Users\\jfcollin\\Google Drive\\R packages")
 
 
 
 
+###############################################
+# Website
+###############################################
+
+## create _pkgdown.yml to customize the website
+#usethis::use_pkgdown()
+#
+## show a template for all functions to reference
+#pkgdown::template_reference()
+#
+## To create the corresponding web page
+#pkgdown::build_reference()
+#
+## show a template for the vignette
+#pkgdown::template_articles()
+#
+## To create the corresponding web page
+#pkgdown::build_articles()
+#
+#
+## Navigation bar
+#pkgdown::template_navbar()
 
 
-
-
+# Build the site
+pkgdown::build_site()
 
 
 

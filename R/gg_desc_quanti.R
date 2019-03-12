@@ -60,7 +60,7 @@
 #' @import ggplot2
 
 
-gg_desc_quanti=function(desc,title="",ylim=NULL,xlim,xlab="",ylab="",
+gg_desc_quanti=function(desc,title="",ylim=NULL,xlim=NULL,xlab="",ylab="",
 		legend.label="Group",add.sd=F)
 {
 	
@@ -123,8 +123,9 @@ gg_desc_quanti=function(desc,title="",ylim=NULL,xlim,xlab="",ylab="",
 								size = 1,
 								linetype = "solid"),legend.position="bottom",
 						title=element_text(size = 10),
-						axis.text.x=element_text(angle =45,hjust=1))+xlab("")+
-				ylab(ylab)+
+						axis.text.x=element_text(colour="white",angle =45,hjust=1),
+						axis.ticks.x=element_line(colour="white"))+xlab("")+
+				ylab(ylab)+xlim(c(0,2))+
 				labs(title=title)
 		
 	
@@ -148,6 +149,12 @@ gg_desc_quanti=function(desc,title="",ylim=NULL,xlim,xlab="",ylab="",
 	{
 		gg=gg+ylim(ylim)
 	}
+	
+	if(!is.null(xlim)) 
+	{
+		gg=gg+ylim(xlim)
+	}
+	
 	
 	return(gg)
 	

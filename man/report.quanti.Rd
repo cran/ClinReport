@@ -2,11 +2,13 @@
 % Please edit documentation in R/report.quanti.R
 \name{report.quanti}
 \alias{report.quanti}
-\title{Creates a desc object for "quantitative" statistics reporting}
+\title{Descriptive "quantitative" statistics (mean, SD, median...) reporting}
 \usage{
 report.quanti(data, y, x1 = NULL, x2 = NULL, y.label = y,
   round = 2, total = F, scientific = F, digits = NULL,
-  at.row = NULL, subjid = NULL, geomean = F, add.mad = F)
+  at.row = NULL, subjid = NULL, geomean = F, add.mad = F,
+  default.stat = T, func.stat = NULL, stat.name = "Statistics",
+  func.stat.name = "")
 }
 \arguments{
 \item{data}{Data.frame object}
@@ -31,9 +33,17 @@ report.quanti(data, y, x1 = NULL, x2 = NULL, y.label = y,
 
 \item{subjid}{Character Indicates the column in which there is the subject Id to add the number of subjects in the column header if x1 and x2 are not null.}
 
-\item{geomean}{Logical If yes geometric mean is calculated  instead of arithmetic mean: \code{exp(mean(log(x),na.rm=T))} fpr x>0}
+\item{geomean}{Logical If yes geometric mean is calculated  instead of arithmetic mean: \code{exp(mean(log(x),na.rm=TRUE))} fpr x>0}
 
 \item{add.mad}{Logical If yes the Median Absolute Deviance is added to the median statistics (see function \code{\link{mad}})}
+
+\item{default.stat}{Logical (default to TRUE). If FALSE you can specify your own example}
+
+\item{func.stat}{Function. If specified then default.stat=FALSE and only the specified statistic is reported}
+
+\item{stat.name}{Character. Indicates the name of the variable that report the statistics Default = "Statistics"}
+
+\item{func.stat.name}{Character. Used only if default.stat=FALSE.  Indicates the name of specific statistic you want to report}
 }
 \value{
 A desc object.
@@ -53,6 +63,8 @@ Quantiles are calculated using type 3 (SAS) algorithms.
 a message is printed  to indicate how many values were deleted to calculate the geometric mean.
 
 \code{N} returns the number of observations (including NA values)
+
+stat.name is auomatically transformed using \code{\link{make.names}} function.
 }
 \examples{
  
@@ -99,8 +111,38 @@ x2="TIMEPOINT",total=TRUE,at.row="TIMEPOINT",subjid="SUBJID")
 # Print tab output
 tab
 
+
+#Getting a specific statistic and not the default ones
+
+mystat=function(x) quantile(x,0.99,na.rm=TRUE)
+
+tab=report.quanti(data=data,y="y_numeric",x1="GROUP",
+x2="TIMEPOINT",total=TRUE,subjid="SUBJID",
+func.stat=mystat,func.stat.name="99\% quantile")
+tab
+
+mystat2=function(x) mean(x,na.rm=TRUE)/sd(x,na.rm=TRUE)
+
+tab=report.quanti(data=data,y="y_numeric",x1="GROUP",
+total=TRUE,subjid="SUBJID",func.stat=mystat2,
+func.stat.name="Coefficient of variation")
+tab
+
+mode=function(x) {
+  x=na.omit(x)
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
+tab=report.quanti(data=data,y="y_numeric",
+func.stat=mode,func.stat.name="Mode")
+
+
 #Getting raw output
 tab$raw.output
+
+#Getting a data.frame version of the output
+tab$output
 
 }
 \seealso{
