@@ -491,16 +491,34 @@ report.doc.desc=function(table,title,colspan.value=NULL,doc=NULL,
 	
 	# Add lines
 	
-	ft=hline(ft, border = fp_border(width = 2), part = "header" )
+	if(!is.null(colspan.value))
+	{
+		ft=hline(ft, i=1,border = fp_border(width = 2), part = "header" )
+		ft=hline(ft, i=2,j=(nb.col+1):(nb.col+n.stat),border = fp_border(width = 2), part = "header" )
+		ft=hline(ft, i=3,border = fp_border(width = 2), part = "header" )
+	}else
+	{
+		ft=hline(ft, border = fp_border(width = 2), part = "header" )
+	}
+	
 	ft=hline_top(ft, border = fp_border(width = 2), part = "header" )
 	
 #	ft=hline_bottom(ft, border = fp_border(width = 2), part = "body" )
-
+	
 	ft=add_footer_row(ft,top=FALSE, values ="",colwidths=ncol(output))
 	ft=hline_bottom(ft, border = fp_border(width = 2), part = "footer")
 	
-	ft=vline(ft, j =1:nb.col,border = fp_border(width = 1),part = "body")
+	if(is.null(table$at.row))
+	{
+		ft=vline(ft,j =1:nb.col,border = fp_border(width = 1),part = "body")
+	}
+	else
+	{
+		i=space_vline(output,table$at.row)
+		ft=vline(ft, i=i,j =1:nb.col,border = fp_border(width = 1),part = "body")
+	}
 	
+
 	# merge first column in case there are repetitions
 	
 	ft=merge_v(ft,j=1)

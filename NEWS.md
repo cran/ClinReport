@@ -77,13 +77,23 @@ return a message if they are not (eventually transform character variables into 
 The user can now implement it's own statistics using argument func.stat and func.stat.name.
 * Complete the vignettes
 
+# ClinReport 0.9.1.12
 
 
+## Issues
 
+* correction of add.stat: when subjid=NULL add.stat didn't work
+* correction in report.quanti: if default quantitative stat were integer, the correct number of digits was not homogeneous
+* correction in report.quanti: total column was not rounded properly, it was always 2 digits
+* correction: spacetable function, reordered lexically the at.row factor: corrected      
 
+## Enhancement
 
-
-
+* Can regroup more than 2 desc object with the function regroup
+* the vertical lines are splitted in report.doc if the at.row argument is filled
+it adds more readibility to the output
+* the horizontal line under the colspan value underline only the levels of colspan levels
+it adds more readibility to the doc
 
 
 

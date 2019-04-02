@@ -34,7 +34,8 @@
 #' in columns and/or \code{x2} in rows). 
 #' See the example to show the results. If \code{total=TRUE}, the last column is the statistics
 #' performed overall levels of \code{x1} for each levels of \code{x2}. 
-#' Quantiles are calculated using type 3 (SAS) algorithms.
+#' Quantiles are calculated using type 3 (SAS presumed definition) algorithms, but even though,
+#' some differences between SAS and R can appear on quantile values.
 #' 
 #' "geomean" compute the geometric mean defined as exp(mean(log(y))). The values below or equal 0 are removed and
 #' a message is printed  to indicate how many values were deleted to calculate the geometric mean.
@@ -274,6 +275,21 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 			stat_list=c(stat_list,"mad"=mad)
 		}
 		
+		
+		# compute statistics
+		
+		stat=data.frame(by_GROUP %>% summarise_at(.funs=stat_list,.vars=y))
+		
+		# in case there are integers
+		#we transform into numeric so that values can be in the proper format
+		
+		stat$mean=as.numeric(stat$mean)
+		stat$sd=as.numeric(stat$sd)
+		stat$median=as.numeric(stat$median)
+		stat$q1=as.numeric(stat$q1)
+		stat$q3=as.numeric(stat$q3)
+		stat$min=as.numeric(stat$min)
+		stat$max=as.numeric(stat$max)
 	}
 	
 	
@@ -282,19 +298,19 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 	{
 		stat=paste0(substitute(func.stat))
 		stat_list=as.formula(paste0("~",stat,"(",y,")"))
+		
+		# compute statistics
+		
+		stat=data.frame(by_GROUP %>% summarise_at(.funs=stat_list,.vars=y))
+		
 	}
 	
-	
-	# compute statistics
-	
-	stat=data.frame(by_GROUP %>% summarise_at(.funs=stat_list,.vars=y))
 	
 	# Save raw output for graphics
 	raw.stat=stat
 	
-	# format outputs
-	
-	ind=which(sapply(stat,class)=="numeric") 
+	# format outputs	
+	ind=which(sapply(stat,class)=="numeric") 	
 	stat[ind]=format(round(stat[ind],round),nsmall=round,scientific=scientific,digits=digits)
 	
 	# Regroup stat
@@ -397,7 +413,8 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 			
 			temp=report.quanti(data=data,y=y,y.label="Total",add.mad=add.mad,
 					default.stat=default.stat,func.stat=func.stat,stat.name=stat.name,
-					func.stat.name=func.stat.name)$output
+					func.stat.name=func.stat.name,round=round,digits=digits,
+					scientific=scientific)$output
 			stat2=merge(stat2,temp,by=stat.name)
 		}
 		
@@ -405,7 +422,8 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 		{
 			temp=report.quanti(data=data,y=y,x1=x2,add.mad=add.mad,
 					default.stat=default.stat,func.stat=func.stat,stat.name=stat.name,
-					func.stat.name=func.stat.name)$output
+					func.stat.name=func.stat.name,round=round,digits=digits,
+					scientific=scientific)$output
 			temp=melt(temp,id.vars=stat.name,variable.name=x2,value.name = "Total")
 			stat2=merge(stat2,temp,by=c(x2,stat.name))
 		}
@@ -495,7 +513,19 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 		
 	}
 	
+	# Spacing the results
 	
+	# check: si c'est mal renseigne on le met a null avec un message
+	
+	if(!is.null(at.row))
+	{
+		if(!any(colnames(stat2)==at.row)) 
+		{
+			message("at.row argument was not found in the colnames of the statistic table produced (probably mispelled)\n
+							so it has been set to NULL")
+			at.row=NULL
+		}	
+	}	
 	
 	if(!is.null(at.row))
 	{

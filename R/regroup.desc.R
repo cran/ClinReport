@@ -85,13 +85,36 @@ regroup.desc=function(x,y,rbind.label="Response",...)
 	if(y$type.desc=="lsmeans") stop("Binding impossible for now for ls means table")
 	
 	
-	out.x=x$output
-	out.y=y$output
+	if(x$regrouped==T & y$regrouped==F)
+	{
+		if(x$type.desc=="quali_quanti")
+		{
+			y$output$rbind.label=y$y.label
+			colnames(y$output)[colnames(y$output)=="rbind.label"]=x$rbind.label
+			rbind.label=x$rbind.label
+		}
+		
+	}
+	
+	if(x$regrouped==F & y$regrouped==T)
+	{
+		if(y$type.desc=="quali_quanti")
+		{
+			x$output$rbind.label=x$y.label
+			colnames(x$output)[colnames(x$output)=="rbind.label"]=y$rbind.label
+			rbind.label=y$rbind.label
+		}
+	}
+	
+	out.x=droplevels(x$output)
+	out.y=droplevels(y$output)
 	
 	# Mixed binding (quali-quanti or quanti-quali)
 	
 	if(x$type.desc!=y$type.desc)
 	{
+		
+		
 		
 		if(!is.null(x$x2) | !is.null(y$x2)) stop("Binding impossible with x2 argument not NULL")
 		
@@ -100,26 +123,51 @@ regroup.desc=function(x,y,rbind.label="Response",...)
 		if(is.null(y$x1)) stop("x1 argument cannot be NULL: binding impossible")
 		if(is.null(x$x1)) stop("x1 argument cannot be NULL: binding impossible")
 		if(x$x1!=y$x1) stop("Different x1 argument: binding impossible")
-		if(x$subjid!=y$subjid) stop("Different subjid argument: binding impossible")
+		
+		if(!is.null(x$subjid) & !is.null(y$subjid))
+		{
+			if(x$subjid!=y$subjid) stop("Different subjid argument: binding impossible")
+		}
+		
+		if(is.null(x$subjid) & !is.null(y$subjid)) stop("Different subjid argument: binding impossible")
+		if(!is.null(x$subjid) & is.null(y$subjid)) stop("Different subjid argument: binding impossible")
 		
 		if(x$type.desc=="quanti") out.x$Levels=""
 		if(y$type.desc=="quanti") out.y$Levels=""
 		
-		out.x$rbind=x$y.label
-		
-		out.y$rbind=y$y.label
+		if(x$regrouped==F & y$regrouped==F)
+		{
+			out.x$rbind=x$y.label
+			out.y$rbind=y$y.label
+		}
 		
 		r=rbind(out.x,out.y)
 		
 		if(x$type.desc=="quali") r=r[,colnames(out.x)]
 		if(y$type.desc=="quali") r=r[,colnames(out.y)]
 		
-		r=spacetable(r,"rbind")
-		colnames(r)[colnames(r)=="rbind"]=rbind.label
+		if(x$regrouped==F & y$regrouped==F)
+		{
+			r=spacetable(r,"rbind")
+			colnames(r)[colnames(r)=="rbind"]=rbind.label
+		}else
+		{
+			r=droplevels(r[r[,rbind.label]!="",])	
+			r=spacetable(r,rbind.label)
+		}
 		
-		nbcol=max(x$nbcol,y$nbcol)
+		if(x$regrouped==F & y$regrouped==F)
+		{
+			nbcol=max(x$nbcol,y$nbcol)+1
+		}else
+		{
+			nbcol=max(x$nbcol,y$nbcol)
+		}
 		
-		r=r[,c(ncol(r),1:(ncol(r)-1))]
+		if(x$regrouped==F & y$regrouped==F)
+		{
+			r=r[,c(ncol(r),1:(ncol(r)-1))]
+		}
 		
 		r=ClinReport::desc(output=r,
 				y=c(x$y,y$y),
@@ -127,7 +175,9 @@ regroup.desc=function(x,y,rbind.label="Response",...)
 				type.desc="quali_quanti",
 				at.row=rbind.label,
 				subjid=x$subjid,
-				nbcol=nbcol)
+				nbcol=nbcol,
+				regrouped=T,
+				rbind.label=rbind.label)
 		
 		return(r)
 		
@@ -139,13 +189,19 @@ regroup.desc=function(x,y,rbind.label="Response",...)
 	{
 		
 		
-		
-		
 		if(x$total!=y$total) stop("Different Total argument: binding impossible")
 		if(is.null(y$x1)) stop("x1 argument cannot be NULL: binding impossible")
 		if(is.null(x$x1)) stop("x1 argument cannot be NULL: binding impossible")
 		if(x$x1!=y$x1) stop("Different x1 argument: binding impossible")
-		if(x$subjid!=y$subjid) stop("Different subjid argument: binding impossible")
+		
+		if(!is.null(x$subjid) & !is.null(y$subjid))
+		{
+			if(x$subjid!=y$subjid) stop("Different subjid argument: binding impossible")
+		}
+		
+		if(is.null(x$subjid) & !is.null(y$subjid)) stop("Different subjid argument: binding impossible")
+		if(!is.null(x$subjid) & is.null(y$subjid)) stop("Different subjid argument: binding impossible")
+		
 		
 		nbcol=x$nbcol
 		
@@ -189,7 +245,9 @@ regroup.desc=function(x,y,rbind.label="Response",...)
 				type.desc=x$type.desc,subjid=x$subjid,
 				nbcol=nbcol,
 				stat.name=x$stat.name,
-				at.row=x$at.row)
+				at.row=x$at.row,
+				regrouped=T,
+				rbind.label=rbind.label)
 		
 		return(r)
 		

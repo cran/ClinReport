@@ -110,7 +110,7 @@ report.quali=function(data,y=NULL,x1=NULL,x2=NULL,y.label=y,
 	if(is.null(y)) stop("y argument cannot be NULL")
 	if(class(data)!="data.frame") stop("data argument should be a data.frame")
 	if(class(y)!="character") stop("Dear user. y argument should be a character")
-
+	
 	y=check.x(data,y)
 	
 	if(!is.null(x2))
@@ -131,7 +131,7 @@ report.quali=function(data,y=NULL,x1=NULL,x2=NULL,y.label=y,
 		
 		freq=report.quali(temp,y,x1="int",x2.label=x2.label,y.label=y.label,
 				x2="int",y.levels.label=y.levels.label,total=F,
-				,percent.col=percent.col,subjid=subjid)
+				,percent.col=percent.col,subjid=subjid,round=round)
 		
 		freq$output=freq$output[,-1]
 		freq$x1=NULL
@@ -148,7 +148,7 @@ report.quali=function(data,y=NULL,x1=NULL,x2=NULL,y.label=y,
 		temp$int=as.factor(1)
 		freq=report.quali(temp,y,x1,x2="int",y.levels.label=y.levels.label,total=total,
 				y.label=y.label,
-				,percent.col=percent.col,subjid=subjid)
+				,percent.col=percent.col,subjid=subjid,round=round)
 		
 		freq$output=freq$output[,-1]
 		freq$x2=NULL
@@ -245,7 +245,7 @@ report.quali=function(data,y=NULL,x1=NULL,x2=NULL,y.label=y,
 	if(total)
 	{
 		freq.tot=report.quali(data=data,y=y,
-				x1=x2)$output
+				x1=x2,round=round)$output
 		
 		freq.tot=suppressWarnings(melt(freq.tot,measure.vars=colnames(freq.tot)[-1],
 						y.levels.label=x2.label,value.name="Total"))
@@ -321,9 +321,20 @@ report.quali=function(data,y=NULL,x1=NULL,x2=NULL,y.label=y,
 	
 	# Spacing results
 	
-	
-	if(!is.null(at.row))
+     # check: si c'est mal renseigne on le met a null avec un message
+
+if(!is.null(at.row))
+{	
+	if(!any(colnames(freq)==at.row)) 
 	{
+		message("at.row argument was not found in the colnames of the statistic table produced (probably mispelled)\n
+        so it has been set to NULL")
+		at.row=NULL
+	}	
+}
+
+	if(!is.null(at.row))
+	{	
 		freq=spacetable(freq,at.row=at.row)
 	}
 	
