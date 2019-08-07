@@ -91,9 +91,38 @@ The user can now implement it's own statistics using argument func.stat and func
 
 * Can regroup more than 2 desc object with the function regroup
 * the vertical lines are splitted in report.doc if the at.row argument is filled
-it adds more readibility to the output
+it adds more readability to the output
 * the horizontal line under the colspan value underline only the levels of colspan levels
 it adds more readibility to the doc
+
+
+# ClinReport 0.9.1.13
+
+## Enhancement
+
+* The reporting of LS-Means has been much simplified so now most of the old arguments are deprecated
+* The reporting of Cox model hazard ratios has been added to the report.lsmeans function
+* The print of the tables has been improved
+* Minor bugs have been corrected 
+
+
+
+# ClinReport 0.9.1.14
+
+## Enhancement
+
+* Add drop.y, drop.x1 and drop.x2 arguments in report.quanti and report.quali to drop levels from the results if needed
+* Add the transpose argument in report.lsmeans function to show the statistics in columns or in rows
+* Add the report.modelinfo function, to export in a table the information relative to a statistical model
+(the call to the model, the package name, the function name, the AIC, BIC, number of observation etc...)
+* If x2 argument is not missing then at.row argument automatically will space the results by row, no need to fill this
+argument systematically anymore
+* The title is automatically filled with y.label argument
+* Add the remove.missing argument in report.quali to be able to compute the percentage on non missing values only if needed
+
+
+
+
 
 
 

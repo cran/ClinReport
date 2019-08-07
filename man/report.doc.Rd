@@ -4,17 +4,18 @@
 \alias{report.doc}
 \alias{report.doc.desc}
 \alias{report.doc.anova}
-\title{Export a statistical table into 'Microsoft Word'}
+\title{Export a statistical table into a 'Microsoft Word' or a R markdown document}
 \usage{
 report.doc(table, ...)
 
-\method{report.doc}{desc}(table, title, colspan.value = NULL,
+\method{report.doc}{desc}(table, title = NULL, colspan.value = NULL,
   doc = NULL, init.numbering = F, numbering = T,
-  font.name = "Times", page.break = T, font.size = 11, ...)
+  font.name = "Times", page.break = T, font.size = 10, ...)
 
 \method{report.doc}{anova}(table, title = "Anova table",
   type.anova = 3, doc = NULL, numbering = T, init.numbering = F,
-  font.name = "Times", font.size = 11, page.break = T, ...)
+  font.name = "Times", font.size = 10, page.break = T,
+  pretty.label = FALSE, ...)
 }
 \arguments{
 \item{table}{A desc object that report statistics (the results of \code{report.quanti} or \code{report.quali})}
@@ -39,6 +40,8 @@ report.doc(table, ...)
 
 \item{type.anova}{Passed to \code{Anova} function from car package (see its documentation).}
 
+\item{pretty.label}{Logical. Default to FALSE. If TRUE, use the function \code{make.label} with default option on the rownames of the anova table}
+
 \item{anova}{Logical. Used to specify if the table is an anova table. By default it's not}
 }
 \value{
@@ -47,12 +50,34 @@ A flextable object (if doc=NULL) or a rdocx object (if doc= an rdocx object).
 \description{
 \code{report.doc} 
 This function enables to export the table created with \code{\link{report.quali}} \code{\link{report.quanti}} or \code{\link{report.lsmeans}}
-to a Microsoft Word in a "clinical standard" format. 
+to a Microsoft Word or a R markdown document. 
 
-It's also possible to use it to have a preview of the table in HTML format if the doc argument is NULL.
+It's also possible to use report.doc to have a preview of the table in HTML format if the \code{doc} argument is NULL.
 }
 \details{
-It creates a flextable object from a desc object and can eventually add it directly into a rdocx object.
+This function creates a flextable object from a desc object.
+
+\strong{For Microsoft Word documents:}
+
+The argument \code{doc} should be used so the flextable is added to a rdocx object.
+
+Like:
+
+\code{doc=read_docx()}
+
+\code{tab=report.quanti(data=data,y="y_numeric",x1="GROUP")}
+
+\code{doc=report.doc(tab,doc=doc)}
+
+\strong{For R markdown documents:}
+
+Just don't use the \code{doc} argument. Something like:
+
+```\{r, include=TRUE\} \cr
+\code{tab=report.quanti(data=data,y="y_numeric",x1="GROUP")} \cr
+\code{doc=report.doc(tab)} \cr
+\code{doc} \cr
+``` \cr
 }
 \examples{
 \dontshow{
@@ -65,21 +90,22 @@ library(emmeans)
 library(lme4)
 library(nlme)
 
-data(data)
+data(datafake)
 
-tab=report.quanti(data=data,y="y_numeric",
+tab=report.quanti(data=datafake,y="y_numeric",
 	x1="GROUP",x2="TIMEPOINT",at.row="TIMEPOINT",subjid="SUBJID")
 
 mod=glm(y_logistic~GROUP+TIMEPOINT+GROUP*TIMEPOINT,
-family=binomial,data=data,na.action=na.omit)
+family=binomial,data=datafake,na.action=na.omit)
+
 test=emmeans(mod,~GROUP|TIMEPOINT)
-tab.mod=report.lsmeans(lsm=test,x1="GROUP",
-x2="TIMEPOINT",at.row="TIMEPOINT",data=data)
+
+tab.mod=report.lsmeans(lsm=test)
 
 
 doc=read_docx()
 
-doc=body_add_par(doc,"A beautiful reporting using ClinReport", style = "heading 1")
+doc=body_add_par(doc,"A statistical report using ClinReport", style = "heading 1")
 
 doc=report.doc(tab,title="Quantitative statistics",
 	colspan.value="Treatment group",doc=doc,init.numbering=TRUE)
@@ -111,12 +137,12 @@ library(xtable)
 # Load data
 #####################
 
-data(data) 
-head(data)
+data(datafake) 
+head(datafake)
 
 # Removing baseline data for the model
 
-data.mod=droplevels(data[data$TIMEPOINT!="D0",])
+data.mod=droplevels(datafake[datafake$TIMEPOINT!="D0",])
 
 #####################
 # Create your stats tables and graphics
@@ -126,7 +152,7 @@ data.mod=droplevels(data[data$TIMEPOINT!="D0",])
 # since it's a big enough table, we don't want it to overlap 2 pasges
 # so we split it in two with split.desc function
 
-tab1=report.quanti(data=data,y="y_numeric",
+tab1=report.quanti(data=datafake,y="y_numeric",
 	x1="GROUP",x2="TIMEPOINT",at.row="TIMEPOINT",subjid="SUBJID")
 
 
@@ -141,30 +167,30 @@ legend.label="Treatment groups",ylab="Y mean")
 
 # Qualitative stats (2 explicative variables) ##################################
 
-tab2=report.quali(data=data,y="y_logistic",
-	x1="GROUP",x2="TIMEPOINT",at.row="TIMEPOINT",total=T,subjid="SUBJID")
+tab2=report.quali(data=datafake,y="y_logistic",
+	x1="GROUP",x2="TIMEPOINT",at.row="TIMEPOINT",total=TRUE,subjid="SUBJID")
 
 gg2=plot(tab2,title="Response distribution (\%) by day and treatment group",
 legend.label="Y levels")
 
 # Qualitative stats (no explicative variable)  ###################################
 
-tab3=report.quali(data=data,y="VAR",y.label="Whatever")
+tab3=report.quali(data=datafake,y="VAR",y.label="Whatever")
 
 # Qualitative stats (no explicative variables ; add number of subjects in header)#
 
-tab4=report.quali(data=data,y="VAR",y.label="Whatever",
+tab4=report.quali(data=datafake,y="VAR",y.label="Whatever",
 	subjid="SUBJID")
 
 # Qualitative stats (1 explicative variable)#######################################
 
-tab5=report.quali(data=data,y="VAR",y.label="Whatever",x1="GROUP",
+tab5=report.quali(data=datafake,y="VAR",y.label="Whatever",x1="GROUP",
 	subjid="SUBJID")
 
 
 # Quantitative stats (1 explicative variable)#######################################
 
-tab6=report.quanti(data=data,y="y_numeric",y.label="Whatever 2",x1="GROUP",
+tab6=report.quanti(data=datafake,y="y_numeric",y.label="Whatever 2",x1="GROUP",
 	subjid="SUBJID")
 
 # Quali-Quanti table
@@ -179,12 +205,11 @@ test1=emmeans(mod1,~GROUP|TIMEPOINT)
 
 anov1=Anova(mod1)
 
-tab.mod1=report.lsmeans(lsm=test1,x1="GROUP",
-x2="TIMEPOINT",at.row="TIMEPOINT",data=data.mod)
+tab.mod1=report.lsmeans(lsm=test1)
 
 gg.mod1=plot(tab.mod1,title="LS-Means response evolution as a function of time\\n
 by treatment group (95\% CI)",
-legend.label="Treatment groups",ylab="Y mean",add.ci=T)
+legend.label="Treatment groups",ylab="Y mean",add.ci=TRUE)
 
 # Linear model (1 group only): Anova and LS-Means and graph reporting ################
 
@@ -193,11 +218,11 @@ mod2=lm(y_numeric~baseline+GROUP,data=data.mod)
 anov2=Anova(mod2,type=3)
 
 test2=emmeans(mod2,~GROUP)
-tab.mod2=report.lsmeans(lsm=test2,x1="GROUP",data=data.mod)
+tab.mod2=report.lsmeans(lsm=test2)
 
 
 gg.mod2=plot(tab.mod2,title="LS-Means response\\nby treatment group (95\% CI)",
-	legend.label="Treatment groups",ylab="Y mean",add.ci=T)
+	legend.label="Treatment groups",ylab="Y mean",add.ci=TRUE)
 
 # Linear mixed model (order 2 interaction):
 # Anova and LS-Means and graph reporting #################
@@ -209,27 +234,27 @@ anov3=Anova(mod3,3)
 
 test3=emmeans(mod3,~GROUP|TIMEPOINT)
 
-tab.mod3=report.lsmeans(lsm=test3,x1="GROUP",
-x2="TIMEPOINT",at.row="TIMEPOINT",data=data.mod)
+tab.mod3=report.lsmeans(lsm=test3)
 
 gg.mod3=plot(tab.mod3,title="LS-Means response evolution as a function of time\\n
 by treatment group (95\% CI Mixed model)",
-	legend.label="Treatment groups",ylab="Y mean",add.ci=T)
+	legend.label="Treatment groups",ylab="Y mean",add.ci=TRUE)
 
 # Contrast example
 
 contr=contrast(test3, "trt.vs.ctrl", ref = "A")
 
-tab.mod3.contr=report.lsmeans(lsm=contr,x1="TIMEPOINT",
-	data=data.mod,contrast=TRUE,at.row="contrast")
+tab.mod3.contr=report.lsmeans(lsm=contr)
 
 gg.mod3.contr=plot(tab.mod3.contr,title="LS-Means contrast versus reference A\\n
 			(95\% CI Mixed model)",
-	legend.label="Treatment groups",ylab="Y mean",add.ci=T,add.line=F)
+	legend.label="Treatment groups",ylab="Y mean",add.ci=TRUE,add.line=FALSE)
 
 
-
+############################################################
 # Generalized Logistic Linear model (order 2 interaction):
+############################################################
+
 # Anova LS-Means and graph reporting ##########
 
 mod4=glm(y_logistic~baseline+GROUP+TIMEPOINT+GROUP*TIMEPOINT,
@@ -239,12 +264,11 @@ anov4=Anova(mod4,3)
 
 test4=emmeans(mod4,~GROUP|TIMEPOINT)
 
-tab.mod4=report.lsmeans(lsm=test4,x1="GROUP",
-x2="TIMEPOINT",at.row="TIMEPOINT",data=data.mod)
+tab.mod4=report.lsmeans(lsm=test4,at.row="TIMEPOINT")
 
 gg.mod4=plot(tab.mod4,title="LS-Means response evolution as a function of time\\n
 by treatment group (95\% CI Logistic model)",
-	legend.label="Treatment groups",ylab="Y mean",add.ci=T)
+	legend.label="Treatment groups",ylab="Y mean",add.ci=TRUE)
 
 # Generalized Poisson Linear model (order 2 interaction):
 # Anova LS-Means and graph reporting #'
@@ -258,13 +282,12 @@ anov5=Anova(mod5,3)
 
 test5=emmeans(mod5,~GROUP|TIMEPOINT)
 
-tab.mod5=report.lsmeans(lsm=test5,x1="GROUP",
-x2="TIMEPOINT",at.row="TIMEPOINT",type="response",data=data.mod)
+tab.mod5=report.lsmeans(lsm=test5,at.row="TIMEPOINT")
 
 
 gg.mod5=plot(tab.mod5,title="LS-Means response evolution as a function of time\\n
 by treatment group (95\% CI Poisson model)",
-	legend.label="Treatment groups",ylab="Y mean",add.ci=T)
+	legend.label="Treatment groups",ylab="Y mean",add.ci=TRUE)
 
 #####################
 # Create your report
@@ -280,8 +303,8 @@ doc=body_add_par(doc,"A beautiful reporting using ClinReport", style = "heading 
 doc=body_add_par(doc,"Descriptive statistics", style = "heading 2")
 
 doc=report.doc(tab1.1,title="Quantitative statistics (2 explicative variables) (Table 1/2)",
-	colspan.value="Treatment group",doc=doc,init.numbering=T,
-page.break=F)
+	colspan.value="Treatment group",doc=doc,init.numbering=TRUE,
+page.break=FALSE)
 
 doc=report.doc(tab1.2,title="Quantitative statistics (2 explicative variables) (Table 2/2)",
 	colspan.value="Treatment group",doc=doc)

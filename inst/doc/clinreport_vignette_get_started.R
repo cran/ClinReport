@@ -16,11 +16,11 @@ library(car)
 
 ## ---- include=TRUE-------------------------------------------------------
 # We will use fake data
-data(data)
+data(datafake)
 print(head(data))
 
 ## ---- include=TRUE-------------------------------------------------------
-tab1=report.quanti(data=data,y="y_numeric",
+tab1=report.quanti(data=datafake,y="y_numeric",
 		x1="GROUP",x2="TIMEPOINT",at.row="TIMEPOINT",
 		subjid="SUBJID")
 
@@ -51,7 +51,7 @@ print(doc, target =file)
 #shell.exec(file)
 
 ## ------------------------------------------------------------------------
-tab=report.quali(data=data,y="y_logistic",
+tab=report.quali(data=datafake,y="y_logistic",
 		x1="VAR",total=T,subjid="SUBJID")
 		
 report.doc(tab,title="Qualitative table with two variables",
@@ -59,7 +59,7 @@ colspan.value="A variable")
 
 
 ## ------------------------------------------------------------------------
-tab=report.quali(data=data,y="y_logistic",
+tab=report.quali(data=datafake,y="y_logistic",
 		x1="GROUP",x2="TIMEPOINT",at.row="TIMEPOINT",
 		total=T,subjid="SUBJID")
 		
@@ -68,7 +68,7 @@ colspan.value="Treatment group")
 
 
 ## ------------------------------------------------------------------------
-tab=report.quanti(data=data,y="y_numeric",
+tab=report.quanti(data=datafake,y="y_numeric",
 		x1="VAR",total=T,subjid="SUBJID")
 		
 report.doc(tab,title="Quantitative table with one explicative variable",
@@ -76,7 +76,7 @@ colspan.value="A variable")
 
 
 ## ------------------------------------------------------------------------
-tab=report.quanti(data=data,y="y_numeric",
+tab=report.quanti(data=datafake,y="y_numeric",
 		x1="GROUP",x2="TIMEPOINT",at.row="TIMEPOINT",
 		total=T,subjid="SUBJID")
 		
@@ -84,10 +84,10 @@ report.doc(tab,title="Quantitative table with two explicative variables",
 colspan.value="Treatment group")	
 
 ## ------------------------------------------------------------------------
-tab1=report.quanti(data=data,y="y_numeric",
+tab1=report.quanti(data=datafake,y="y_numeric",
 		x1="GROUP",subjid="SUBJID",y.label="Y numeric")
 
-tab2=report.quali(data=data,y="y_logistic",
+tab2=report.quali(data=datafake,y="y_logistic",
 		x1="GROUP",subjid="SUBJID",y.label="Y logistic")
 
 tab3=regroup(tab1,tab2,rbind.label="The label of your choice")
@@ -98,7 +98,7 @@ colspan.value="Treatment group")
 
 ## ------------------------------------------------------------------------
 # Removing baseline data for the model
-data.mod=droplevels(data[data$TIMEPOINT!="D0",])
+data.mod=droplevels(datafake[datafake$TIMEPOINT!="D0",])
 
 mod=lme(y_numeric~baseline+GROUP+TIMEPOINT+GROUP*TIMEPOINT,
 random=~1|SUBJID,data=data.mod,na.action=na.omit)
@@ -110,8 +110,7 @@ report.doc(anov3,title="Mixed Qualitative and Quantitative output")
 ## ------------------------------------------------------------------------
 lsm=emmeans(mod,~GROUP|TIMEPOINT)
 
-tab=report.lsmeans(lsm,x1="GROUP",x2="TIMEPOINT",data=data.mod,
-at.row="TIMEPOINT")
+tab=report.lsmeans(lsm,at.row="TIMEPOINT")
 
 report.doc(tab,title="LS-Means example",
 colspan.value="Treatment Group")
@@ -119,14 +118,26 @@ colspan.value="Treatment Group")
 ## ------------------------------------------------------------------------
 contr=contrast(lsm, "trt.vs.ctrl", ref = "A")
 
-# Now there is just only one explicative variable
-# since we make comparison between treatment group
-# so there is only x1="TIMEPOINT" in the call
+# There is just only one explicative variable
 
-tab.contr=report.lsmeans(lsm=contr,x1="TIMEPOINT",
-		data=data.mod,contrast=TRUE,at.row="contrast")
+tab.contr=report.lsmeans(lsm=contr,at="TIMEPOINT")
 		
 		
 report.doc(tab.contr,title="LS-Means contrast example",
-colspan.value="Time points")		
+colspan.value="Contrasts")		
+
+## ------------------------------------------------------------------------
+library(survival)
+ 
+data(time_to_cure)
+ 
+fit <- coxph(Surv(time, status) ~ Group, data = time_to_cure) 
+em=emmeans(fit,~Group,type="response")
+pairs=pairs(em,adjust="none",exclude="Untreated")
+tab.pairs=report.lsmeans(pairs)
+
+tab.pairs
+
+report.doc(tab.pairs,title="Hazard ratios of a Cox model")
+
 

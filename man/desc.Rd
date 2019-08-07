@@ -2,13 +2,14 @@
 % Please edit documentation in R/desc.R
 \name{desc}
 \alias{desc}
-\title{Constructor function for the desc object}
+\title{Constructor function for desc objects}
 \usage{
 desc(output = NULL, total = NULL, nbcol = NULL, y = NULL,
   x1 = NULL, x2 = NULL, at.row = NULL, subjid = NULL,
   type.desc = NULL, type = NULL, y.label = NULL, type.mod = NULL,
   raw.output = NULL, contrast = NULL, contrast.name = NULL,
-  stat.name = NULL, regrouped = F, rbind.label = NULL)
+  stat.name = NULL, regrouped = F, rbind.label = NULL,
+  title = NULL)
 }
 \arguments{
 \item{output}{a data.frame object}
@@ -49,6 +50,8 @@ Default = "Statistics"}
 \item{regrouped}{Logical. used to indicate if the desc object regroup several desc objects (see \code{\link{regroup.desc}} )}
 
 \item{rbind.label}{Character. The name of the label in case several desc objects are regrouped}
+
+\item{title}{Character. The title of the desc object that will be printed and used in \code{\link{report.doc}}}
 }
 \value{
 A desc object

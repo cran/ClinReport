@@ -16,7 +16,7 @@ library(car)
 
 ## ---- include=TRUE-------------------------------------------------------
 # We will use fake data
-data(data)
+data(datafake)
 print(head(data))
 
 ## ---- include=TRUE-------------------------------------------------------
@@ -110,8 +110,7 @@ report.doc(anov3,title="Mixed Qualitative and Quantitative output")
 ## ------------------------------------------------------------------------
 lsm=emmeans(mod,~GROUP|TIMEPOINT)
 
-tab=report.lsmeans(lsm,x1="GROUP",x2="TIMEPOINT",data=data.mod,
-at.row="TIMEPOINT")
+tab=report.lsmeans(lsm,at.row="TIMEPOINT")
 
 report.doc(tab,title="LS-Means example",
 colspan.value="Treatment Group")
@@ -123,8 +122,7 @@ contr=contrast(lsm, "trt.vs.ctrl", ref = "A")
 # since we make comparison between treatment group
 # so there is only x1="TIMEPOINT" in the call
 
-tab.contr=report.lsmeans(lsm=contr,x1="TIMEPOINT",
-		data=data.mod,contrast=TRUE,at.row="contrast")
+tab.contr=report.lsmeans(lsm=contr,at.row="contrast")
 		
 		
 report.doc(tab.contr,title="LS-Means contrast example",

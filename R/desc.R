@@ -4,7 +4,7 @@
 ###############################################################################
 
 
-#' Constructor function for the desc object
+#' Constructor function for desc objects
 #' 
 #' @param output a data.frame object
 #' @param y Character indicating the response variable
@@ -27,6 +27,7 @@
 #' Default = "Statistics"
 #' @param regrouped Logical. used to indicate if the desc object regroup several desc objects (see \code{\link{regroup.desc}} )
 #' @param rbind.label Character. The name of the label in case several desc objects are regrouped
+#' @param title Character. The title of the desc object that will be printed and used in \code{\link{report.doc}}
 #' 
 #' 
 #' @description
@@ -58,7 +59,7 @@ desc=function(output=NULL,total=NULL,nbcol=NULL,y=NULL,x1=NULL,x2=NULL,
 		at.row=NULL,
 		subjid=NULL,type.desc=NULL,type=NULL,y.label=NULL,type.mod=NULL,
 		raw.output=NULL,contrast=NULL,contrast.name=NULL,stat.name=NULL,
-		regrouped=F,rbind.label=NULL)
+		regrouped=F,rbind.label=NULL,title=NULL)
 {
 	
 	
@@ -67,7 +68,7 @@ desc=function(output=NULL,total=NULL,nbcol=NULL,y=NULL,x1=NULL,x2=NULL,
 			subjid=subjid,type.desc=type.desc,type=type,y.label=y.label,
 			type.mod=type.mod,raw.output=raw.output,contrast=contrast,
 			contrast.name=contrast.name,stat.name=stat.name,regrouped=regrouped,
-			rbind.label=rbind.label)
+			rbind.label=rbind.label,title=title)
 	
 	class(l)="desc"
 	

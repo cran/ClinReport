@@ -37,16 +37,16 @@
 Display the corresponding graphic of statistical table
 }
 \details{
-It's a wrapper function whiche uses  \code{\link{gg_desc_quanti}} 
+It's a wrapper function which uses  \code{\link{gg_desc_quanti}} 
  \code{\link{gg_desc_quali}}  or  \code{\link{gg_desc_lsmeans}} depending if
 the desc object is of type "quali", "quanti" or "lsmeans"
  (argument\code{type.desc} in \code{\link{desc}} object, see examples below).
 }
 \examples{
  
-data(data)
+data(datafake)
 
-desc=report.quali(data=data,y="y_logistic",x1="GROUP",
+desc=report.quali(data=datafake,y="y_logistic",x1="GROUP",
 	x2="TIMEPOINT")
 
 plot(desc,
@@ -55,7 +55,7 @@ legend.label="Y levels")
 
 
 
-desc2=report.quanti(data=data,y="y_numeric",x1="GROUP",
+desc2=report.quanti(data=datafake,y="y_numeric",x1="GROUP",
 	x2="TIMEPOINT")
 
 plot(desc2,
@@ -65,7 +65,7 @@ legend.label="Treatment groups")
 
 #Removing baseline data in the response, for the model
 
-data.mod=droplevels(data[data$TIMEPOINT!="D0",]) 
+data.mod=droplevels(datafake[datafake$TIMEPOINT!="D0",]) 
 
 library(nlme)
 library(emmeans)
@@ -75,8 +75,7 @@ random=~1|SUBJID,data=data.mod,na.action=na.omit)
 
 test3=emmeans(mod3,~GROUP|TIMEPOINT)
 
-tab.mod3=report.lsmeans(lsm=test3,x1="GROUP",
-	x2="TIMEPOINT",at.row="TIMEPOINT",data=data.mod)
+tab.mod3=report.lsmeans(lsm=test3)
 
 gg=plot(tab.mod3,title="LS Means plot example")
 

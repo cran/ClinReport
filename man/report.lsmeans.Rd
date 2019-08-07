@@ -4,40 +4,42 @@
 \alias{report.lsmeans}
 \title{'LS Means' statistics reporting}
 \usage{
-report.lsmeans(lsm, x1 = "treatment", x2 = NULL, x3 = NULL, data,
-  variable.name = "Statistics", at.row = NULL, infer = c(T, T),
-  type = "link", contrast = F, contrast.name = "contrast",
-  x1.name = "treatment", x2.name = NULL, x3.name = NULL)
+report.lsmeans(lsm, at.row = NULL, infer = c(T, T), round = 2, x1,
+  x2, x3, x1.name, x2.name, x3.name, data, contrast, contrast.name, type,
+  transpose = FALSE, y.label = NULL)
 }
 \arguments{
 \item{lsm}{emmGrid object (result of a \code{emmeans} call)}
-
-\item{x1}{Character Mandatory. Indicating a factor in the data (can be an intercept: see example). Levels will be displayed in columns}
-
-\item{x2}{Character indicating a factor in the data. Levels will be displayed in rows}
-
-\item{x3}{Character indicating a factor in the data. Levels will be displayed in rows}
-
-\item{data}{Data.frame object from which the Least Square means are coming from}
-
-\item{variable.name}{Character. The label of the column which indicates the statistics reported.}
 
 \item{at.row}{Character. Passed to spacetable function. Used to space the results per levels of the mentioned variable}
 
 \item{infer}{A vector of one or two logical values. Passed to \code{summary.emmGrid} function.}
 
-\item{type}{Character. Type of prediction desired. Passed to summary.emmGrid function. Can be "link" or "response"}
+\item{round}{Numeric. Specify the number of digits to round the statistics}
 
-\item{contrast}{Logical. Specify if the contrast function has been used after the emmeans function (see examples)}
+\item{x1}{deprecated}
 
-\item{contrast.name}{Character. Corresponds to the label of the column in which the contrasts are specified (see example).
-Default value is 'contrast'.}
+\item{x2}{deprecated}
 
-\item{x1.name}{Character. Deprecated (replaced by x1)}
+\item{x3}{deprecated}
 
-\item{x2.name}{Character. Deprecated (replaced by x2)}
+\item{x1.name}{deprecated}
 
-\item{x3.name}{Character Deprecated (replaced by x3)}
+\item{x2.name}{deprecated}
+
+\item{x3.name}{deprecated}
+
+\item{data}{deprecated}
+
+\item{contrast}{deprecated}
+
+\item{contrast.name}{deprecated}
+
+\item{type}{deprecated}
+
+\item{transpose}{Logical. If TRUE Statistics will be reported in columns}
+
+\item{y.label}{Character Indicates the label for y parameter to be displayed in the title of the table}
 }
 \value{
 A desc object that can be used by the \code{report.doc} function.
@@ -56,26 +58,38 @@ It doesn't work for quantitative covariates.
 library(emmeans)
 library(lme4)
 
-data(data)
+data(datafake)
 
 #Simple lm model
 
 mod=lm(Petal.Width~Species,data=iris)
 raw.lsm=emmeans(mod,~Species)
-report.lsmeans(raw.lsm,"Species",data=iris)
+report.lsmeans(raw.lsm)
 
-# In case of just one intercept you must use a workaround...
-iris$int=1
-mod=glm(Species~int,data=iris,family=binomial)
-raw.lsm=emmeans(mod,~int)
-iris$int=as.factor(iris$int)
-report.lsmeans(raw.lsm,"int",data=iris)
+# You can display the Statistics in columns
+
+report.lsmeans(raw.lsm,transpose=TRUE)
+
+# In case of just one intercept 
+
+mod=glm(Species~1,data=iris,family=binomial)
+raw.lsm=emmeans(mod,~1)
+report.lsmeans(raw.lsm)
+
+# Display statistics in columns
+
+report.lsmeans(raw.lsm,transpose=TRUE)
+
 
 #Mixed model example using lme4
 
-mod=lmer(y_numeric~GROUP+TIMEPOINT+GROUP*TIMEPOINT+(1|SUBJID),data=data) 
+mod=lmer(y_numeric~GROUP+TIMEPOINT+GROUP*TIMEPOINT+(1|SUBJID),data=datafake) 
 raw.lsm=emmeans(mod,~GROUP|TIMEPOINT)
-report.lsmeans(lsm=raw.lsm,x1="GROUP",x2="TIMEPOINT",at.row="TIMEPOINT",data=data)
+report.lsmeans(lsm=raw.lsm,at="TIMEPOINT")
+
+# Display statistics in columns
+
+report.lsmeans(lsm=raw.lsm,at="TIMEPOINT",transpose=TRUE)
 
 
 # GLM model with specific contrast
@@ -83,7 +97,30 @@ report.lsmeans(lsm=raw.lsm,x1="GROUP",x2="TIMEPOINT",at.row="TIMEPOINT",data=dat
 warp.lm <- lm(breaks ~ wool+tension+wool:tension, data = warpbreaks)
 warp.emm <- emmeans(warp.lm, ~ tension | wool)
 contr=contrast(warp.emm, "trt.vs.ctrl", ref = "M")
-report.lsmeans(lsm=contr,x1="wool",data=warpbreaks,contrast=TRUE,at.row="contrast")
+report.lsmeans(lsm=contr,at="wool")
+
+
+# Display statistics in columns
+
+report.lsmeans(lsm=contr,at="wool",transpose=TRUE)
+
+
+# Cox model
+
+library(survival)
+
+data(time_to_cure)
+
+fit <- coxph(Surv(time, status) ~ Group, data = time_to_cure) 
+em=emmeans(fit,~Group,type="response")
+pairs=pairs(em,adjust="none",exclude="Untreated")
+pairs
+
+report.lsmeans(pairs)
+
+# Display statistics in columns
+
+report.lsmeans(pairs,transpose=TRUE)
 
 }
 \seealso{

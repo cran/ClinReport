@@ -27,9 +27,9 @@
 
 #' @examples
 #'  \dontshow{
-#' data(data)
+#' data(datafake)
 #'
-#'desc=report.quali(data=data,y="y_logistic",x1="GROUP",
+#'desc=report.quali(data=datafake,y="y_logistic",x1="GROUP",
 #'		x2="TIMEPOINT")
 #' 
 #'gg=ClinReport:::gg_desc_quali(desc,
@@ -37,10 +37,10 @@
 #' legend.label="Y levels")
 #'
 #'
-#'desc2=report.quali(data=data,y="y_logistic",x1="GROUP")
+#'desc2=report.quali(data=datafake,y="y_logistic",x1="GROUP")
 #'ClinReport:::gg_desc_quali(desc2,title="Qualitative desc object with 1 explicative variable")
 #' 
-#' desc3=report.quali(data=data,y="y_logistic")
+#' desc3=report.quali(data=datafake,y="y_logistic")
 #' ClinReport:::gg_desc_quali(desc3,title="Qualitative desc object with 1 explicative variable")
 #' 
 #' 
@@ -61,6 +61,7 @@ gg_desc_quali=function(desc,title="",ylim=NULL,xlim=NULL,xlab="",
 	if(class(desc)!="desc") stop("\n desc should be a desc object")
 	if(desc$type.desc!="quali") stop("This function should be used only for qualitative desc object")
 	
+	y=desc$y
 	x1=desc$x1
 	x2=desc$x2
 	stat=desc$raw.output
@@ -69,9 +70,7 @@ gg_desc_quali=function(desc,title="",ylim=NULL,xlim=NULL,xlab="",
 	
 	if(is.null(ylim)) ylim=c(0,100)
 	
-	
-	Var1="Var1"
-	Var2="Var2"
+
 	percent="percent"
 	
 	th=theme_bw()+theme(plot.background = element_rect(
@@ -84,9 +83,10 @@ gg_desc_quali=function(desc,title="",ylim=NULL,xlim=NULL,xlab="",
 	
 	if(!is.null(x1) & !is.null(x2))
 	{
-		gg=ggplot(stat, aes_(as.name(Var2),as.name(percent)
-		,fill=as.name(Var1))) +
-				geom_col()+facet_wrap(~Var3)+theme_bw()+
+		f=as.formula(paste0("~",x2))
+		
+		gg=ggplot(stat, aes_(as.name(x1),as.name(percent),fill=as.name(y))) +
+				geom_col()+facet_wrap(f)+theme_bw()+
 				scale_fill_discrete(name=legend.label)+th+
 				ylim(ylim)+
 				labs(title=title,x=xlab,y=ylab)
@@ -98,8 +98,7 @@ gg_desc_quali=function(desc,title="",ylim=NULL,xlim=NULL,xlab="",
 	if(!is.null(x1) & is.null(x2))
 	{
 		
-		gg=ggplot(stat, aes_(as.name(Var2),as.name(percent),
-								fill=as.name(Var1))) +
+		gg=ggplot(stat, aes_(as.name(x1),as.name(percent),fill=as.name(y))) +
 				geom_col()+
 				scale_fill_discrete(name=legend.label)+th+
 				ylim(ylim)+
@@ -112,7 +111,7 @@ gg_desc_quali=function(desc,title="",ylim=NULL,xlim=NULL,xlab="",
 	if(is.null(x1) & is.null(x2))
 	{
 		
-		gg=ggplot(stat, aes_(as.name(Var1),as.name(percent))) +
+		gg=ggplot(stat, aes_(as.name(y),as.name(percent))) +
 				geom_col()+th+
 				ylim(ylim)+	labs(title=title,x=xlab,y=ylab)
 		

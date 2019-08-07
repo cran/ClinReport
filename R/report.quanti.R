@@ -2,7 +2,7 @@
 # Author: jfcollin
 ###############################################################################
 
-#' Descriptive "quantitative" statistics (mean, SD, median...) reporting
+#' Descriptive "Quantitative" statistics (mean, SD, median...) reporting
 #' 
 #'
 #' @param data Data.frame object
@@ -12,17 +12,18 @@
 #' @param round Numeric to indicate how to round statistics
 #' @param total Logical to indicate if a "Total" column should be added
 #' @param scientific Logical Indicates if statistics should be displayed in scientific notations or not
-#' @param digits Numeric (used if scientifc=TRUE) to indicate how many digits to use in scientific notation
+#' @param digits Numeric (used if scientific=TRUE) to indicate how many digits to use in scientific notation
 #' @param at.row Character Used to space the results (see examples)
-#' @param y.label Character Indicates the label for y parameter
+#' @param y.label Character Indicates the label for y parameter to be displayed in the title of the table
 #' @param subjid Character Indicates the column in which there is the subject Id to add the number of subjects in the column header if x1 and x2 are not null.
-#' @param geomean Logical If yes geometric mean is calculated  instead of arithmetic mean: \code{exp(mean(log(x),na.rm=TRUE))} fpr x>0
+#' @param geomean Logical If yes geometric mean is calculated  instead of arithmetic mean: \code{exp(mean(log(x),na.rm=TRUE))} for x>0
 #' @param add.mad Logical If yes the Median Absolute Deviance is added to the median statistics (see function \code{\link{mad}}) 
 #' @param default.stat Logical (default to TRUE). If FALSE you can specify your own example
 #' @param func.stat Function. If specified then default.stat=FALSE and only the specified statistic is reported
 #' @param func.stat.name Character. Used only if default.stat=FALSE.  Indicates the name of specific statistic you want to report
 #' @param stat.name Character. Indicates the name of the variable that report the statistics Default = "Statistics"
-#' 
+#' @param drop.x1 Character. Indicates one or several levels of the x1 factor that you want to drop in the result
+#' @param drop.x2 Character. Indicates one or several levels of the x2 factor that you want to drop in the result
 #' 
 #' @description
 #' \code{report.quanti} 
@@ -42,7 +43,7 @@
 #' 
 #' \code{N} returns the number of observations (including NA values)
 #' 
-#' stat.name is auomatically transformed using \code{\link{make.names}} function.
+#' stat.name is automatically transformed using \code{\link{make.names}} function.
 
 #' @return  
 #' A desc object.
@@ -51,44 +52,44 @@
 
 #' @examples
 #'  
-#' data(data)
+#' data(datafake)
 #' 
 #' # Quantitative statistics with no factor
 #' 
-#' report.quanti(data=data,y="y_numeric",total=TRUE,y.label="Awesome results")
+#' report.quanti(data=datafake,y="y_numeric",total=TRUE,y.label="Awesome results")
 #' 
 #' #' # Quantitative statistics with no factor with geometric mean (option geomean=TRUE)
 #' 
-#' report.quanti(data=data,y="y_numeric",y.label="Awesome results",geomean=TRUE)
+#' report.quanti(data=datafake,y="y_numeric",y.label="Awesome results",geomean=TRUE)
 #' 
 #' # Quantitative statistics with one factor
 #' 
-#' report.quanti(data=data,y="y_numeric",x1="GROUP")
+#' report.quanti(data=datafake,y="y_numeric",x1="GROUP")
 #' 
 #' # One factor with total column
 #' 
-#' report.quanti(data=data,y="y_numeric",x1="GROUP",total=TRUE)
+#' report.quanti(data=datafake,y="y_numeric",x1="GROUP",total=TRUE)
 #' 
 #' # Quantitative statistics with two factors
 #' 
-#' report.quanti(data=data,y="y_numeric",x1="GROUP",x2="TIMEPOINT")
+#' report.quanti(data=datafake,y="y_numeric",x1="GROUP",x2="TIMEPOINT")
 #' 
 #' # Quantitative statistics with two factors and a total column
 #' 
-#' report.quanti(data=data,y="y_numeric",x1="GROUP",x2="TIMEPOINT",total=TRUE)
+#' report.quanti(data=datafake,y="y_numeric",x1="GROUP",x2="TIMEPOINT",total=TRUE)
 #' 
 #' # Add median absolute deviance to the median statistics
 #' 
-#' report.quanti(data=data,y="y_numeric",x1="GROUP",x2="TIMEPOINT",total=TRUE,add.mad=TRUE)
+#' report.quanti(data=datafake,y="y_numeric",x1="GROUP",x2="TIMEPOINT",total=TRUE,add.mad=TRUE)
 #' 
 #' # Quantitative statistics with spacing rows (option at.row)
 #' 
-#' report.quanti(data=data,y="y_numeric",x1="GROUP",
+#' report.quanti(data=datafake,y="y_numeric",x1="GROUP",
 #' x2="TIMEPOINT",total=TRUE,at.row="TIMEPOINT")
 #' 
 #' # Add number of subjects in headers (option subjid)
 #' 
-#' tab=report.quanti(data=data,y="y_numeric",x1="GROUP",
+#' tab=report.quanti(data=datafake,y="y_numeric",x1="GROUP",
 #' x2="TIMEPOINT",total=TRUE,at.row="TIMEPOINT",subjid="SUBJID")
 #' 
 #' # Print tab output
@@ -99,14 +100,14 @@
 #' 
 #' mystat=function(x) quantile(x,0.99,na.rm=TRUE)
 #' 
-#' tab=report.quanti(data=data,y="y_numeric",x1="GROUP",
+#' tab=report.quanti(data=datafake,y="y_numeric",x1="GROUP",
 #' x2="TIMEPOINT",total=TRUE,subjid="SUBJID",
 #' func.stat=mystat,func.stat.name="99% quantile")
 #' tab
 #' 
 #' mystat2=function(x) mean(x,na.rm=TRUE)/sd(x,na.rm=TRUE)
 #' 
-#' tab=report.quanti(data=data,y="y_numeric",x1="GROUP",
+#' tab=report.quanti(data=datafake,y="y_numeric",x1="GROUP",
 #' total=TRUE,subjid="SUBJID",func.stat=mystat2,
 #' func.stat.name="Coefficient of variation")
 #' tab
@@ -117,7 +118,7 @@
 #'   ux[which.max(tabulate(match(x, ux)))]
 #' }
 #' 
-#' tab=report.quanti(data=data,y="y_numeric",
+#' tab=report.quanti(data=datafake,y="y_numeric",
 #' func.stat=mode,func.stat.name="Mode")
 #' 
 #' 
@@ -139,7 +140,8 @@
 report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 		round=2,
 		total=F,scientific=F,digits=NULL,at.row=NULL,subjid=NULL,geomean=F,
-		add.mad=F,default.stat=T,func.stat=NULL,stat.name="Statistics",func.stat.name="")
+		add.mad=F,default.stat=T,func.stat=NULL,stat.name="Statistics",func.stat.name="",
+		drop.x1=NULL,drop.x2=NULL)
 {
 	
 	stat.name=make.names(stat.name)
@@ -159,7 +161,7 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 	# Check 
 	################################
 	
-	if(is.null(y)) stop("y argument cannot be NULL. Thank you for your comprehension")
+	if(is.null(y)) stop("y argument cannot be NULL")
 	if(class(data)!="data.frame") stop("data argument should be a data.frame")
 	
 	if(class(y)!="character") stop("Dear user. y argument should be a character")
@@ -183,6 +185,50 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 		if(!is.function(func.stat)) stop("func.stat argument should be a function")
 		
 		default.stat=F
+		
+	}
+	
+	if(!is.null(drop.x2))
+	{
+		if(is.null(x2))
+		{
+		drop.x2=NULL
+		message("drop.x2 argument not used because x2 argument is missing")
+		}
+		
+		if(!is.null(x2))
+		{
+			check=any(!"%in%"(drop.x2,levels(data[,x2])))
+			if(!check)
+			{
+				data=droplevels(data[!"%in%"(data[,x2],drop.x2),])
+			}else
+			{
+				message("drop.x2 argument not used because it contains levels that are not in x2 factor")
+			}
+		}
+		
+	}
+	
+	if(!is.null(drop.x1))
+	{
+		if(is.null(x1))
+		{
+			drop.x1=NULL
+			message("drop.x1 argument not used because x1 argument is missing")
+		}
+		
+		if(!is.null(x1))
+		{
+			check=any(!"%in%"(drop.x1,levels(data[,x1])))
+			if(!check)
+			{
+				data=droplevels(data[!"%in%"(data[,x1],drop.x1),])
+			}else
+			{
+				message("drop.x1 argument not used because it contains levels that are not in x1 factor")
+			}
+		}
 		
 	}
 	
@@ -535,6 +581,14 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 	}
 	
 	
+	if(is.null(at.row) & !is.null(x2))
+	{
+		at.row=x2
+		lev=levels(stat2[,stat.name])
+		stat2=spacetable(stat2,at.row=at.row)
+		stat2[,stat.name]=factor(stat2[,stat.name],levels=c(lev,""))
+	}
+	
 	# determination of the number of columns
 	if(is.null(x2) )
 	{
@@ -544,10 +598,14 @@ report.quanti=function(data,y,x1=NULL,x2=NULL,y.label=y,
 		nbcol=2
 	}
 	
+
+	
+	
+	title=paste0("Quantitative descriptive statistics of: ",y.label)
 	
 	stat2=ClinReport::desc(output=stat2,total=total,nbcol=nbcol,y=y,x1=x1,x2=x2,at.row=at.row,
 			subjid=subjid,type.desc="quanti",type=NULL,y.label=y.label,
-			raw.output=raw.stat,stat.name=stat.name)
+			raw.output=raw.stat,stat.name=stat.name,title=title)
 	
 	
 	

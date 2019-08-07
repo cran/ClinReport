@@ -45,13 +45,16 @@ render("C:\\Users\\jfcollin\\git\\README.Rmd")
 # Vignette
 ###############################################
 
+render("C:\\Users\\jfcollin\\git\\vignettes\\clinreport_vignette_standard.Rmd")
 render("C:\\Users\\jfcollin\\git\\vignettes\\clinreport_vignette_get_started.Rmd")
 render("C:\\Users\\jfcollin\\git\\vignettes\\clinreport_modify_outputs.Rmd")
 render("C:\\Users\\jfcollin\\git\\vignettes\\clinreport_graphics.Rmd")
 
-#shell.exec("C:\\Users\\jfcollin\\git\\vignettes\\clinreport-vignette.html")
+#shell.exec("C:\\Users\\jfcollin\\git\\vignettes\\clinreport_vignette_standard.html")
+#shell.exec("C:\\Users\\jfcollin\\git\\vignettes\\clinreport_vignette_get_started.html")
 #shell.exec("C:\\Users\\jfcollin\\git\\vignettes\\clinreport_modify_outputs.html")
 #shell.exec("C:\\Users\\jfcollin\\git\\vignettes\\clinreport_graphics.html")
+
 
 
 devtools::build_vignettes()
@@ -61,7 +64,11 @@ devtools::build_vignettes()
 ###############################################
 
 
+document()
 
+spell_check()
+
+check_rhub()
 
 # to avoid the check of the docs directory
 # when check as cran
@@ -69,12 +76,16 @@ devtools::build_vignettes()
 
 check(args ="--as-cran")
 
+check(args ="--as-cran",run_dont_test=TRUE)
+
 
 #install()
+
 install(build_vignettes =T)
 build(path = "C:\\Users\\jfcollin\\Google Drive\\R packages")
 
 
+release()
 
 
 ###############################################
@@ -102,7 +113,25 @@ build(path = "C:\\Users\\jfcollin\\Google Drive\\R packages")
 
 
 # Build the site
+
 pkgdown::build_site()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
