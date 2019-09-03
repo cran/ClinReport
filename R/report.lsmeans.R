@@ -26,6 +26,7 @@
 #' @description
 #' Creates a desc object for "LS Means" statistics reporting. 
 #' 
+#' For more examples see the website: \href{https://jfrancoiscollin.github.io/ClinReport}{ClinReport website}
 #' 
 #' @details
 #' You can produce formatted Least Square Means table for up to 3 factors.
@@ -78,7 +79,7 @@
 #' report.lsmeans(lsm=raw.lsm,at="TIMEPOINT",transpose=TRUE)
 #' 
 #' 
-#' # GLM model with specific contrast
+#' # LM model with specific contrast
 #' 
 #' warp.lm <- lm(breaks ~ wool+tension+wool:tension, data = warpbreaks)
 #' warp.emm <- emmeans(warp.lm, ~ tension | wool)
@@ -182,7 +183,9 @@ report.lsmeans=function(lsm,at.row=NULL,infer=c(T,T),round=2,x1,x2,x3,x1.name,x2
 		}
 	}else
 	{
-		type="response"
+		if(!is.null(lsm@misc$tran)) type="link"
+		if(is.null(lsm@misc$tran)) type="response"
+	
 	}
 
 	vars=unique(c(lsm@misc$pri.vars,lsm@misc$by.vars))

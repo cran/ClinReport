@@ -42,7 +42,7 @@ lineplot with or without confidence intervals (see examples in report.doc functi
 ## Issues
 
 * Correction of nbcol argument when x2=NULL and x1!=NULL in report.quali function
-* Correction of a footenote issue for ls-means reporting of GLM model
+* Correction of a footnote issue for ls-means reporting of GLM model
 
 ## Enhancement
 
@@ -119,8 +119,13 @@ it adds more readibility to the doc
 argument systematically anymore
 * The title is automatically filled with y.label argument
 * Add the remove.missing argument in report.quali to be able to compute the percentage on non missing values only if needed
+* Add transpose function
+* Add hierarchical descriptive statistics for reporting Adverse Event, Medical History and concomitant treatment
+* Add report.sessionInfo to export to Word or R markdown do, the sessionInfo of R
+* Add report.doc.anova.lme function, so that results from anova() function can be exported
 
-
+## Issues
+* Correction of a bug in report.quanti when x1 and x2 arguments were NULL 
 
 
 

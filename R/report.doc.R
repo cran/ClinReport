@@ -23,6 +23,7 @@
 #' @param font.name Character. Passed to \code{\link{font}} function. Set the font of the output in Word
 #' @param font.size Numeric. Passed to \code{\link{fontsize}} function. Set the font size of the output in Word
 #' @param page.break Logical. If TRUE it adds a page break after the output. Default to TRUE
+#' @param valign Logical. If TRUE it aligns vertically the levels of the merged cells in the first column
 #' @param ... Other arguments
 #' 
 #' 
@@ -32,6 +33,8 @@
 #' to a Microsoft Word or a R markdown document. 
 #' 
 #' It's also possible to use report.doc to have a preview of the table in HTML format if the \code{doc} argument is NULL.
+#' 
+#' For more examples see the website: \href{https://jfrancoiscollin.github.io/ClinReport}{ClinReport website}
 #' 
 #' @details
 #' 
@@ -403,7 +406,7 @@
 #'
 #' }
 #' 
-#' @import  officer flextable
+#' @import officer flextable
 #' 
 #' @rdname report.doc
 #' @export
@@ -419,7 +422,8 @@ report.doc <- function(table,...)
 #' @export 
 
 report.doc.desc=function(table,title=NULL,colspan.value=NULL,doc=NULL,
-		init.numbering=F,numbering=T,font.name="Times",page.break=T,font.size=10,...)
+		init.numbering=F,numbering=T,font.name="Times",page.break=T,
+		font.size=10,valign=F,...)
 {
 	
 	
@@ -551,6 +555,7 @@ report.doc.desc=function(table,title=NULL,colspan.value=NULL,doc=NULL,
 	# merge first column in case there are repetitions
 	
 	ft=merge_v(ft,j=1)
+	if(valign) 	ft=valign(ft, j = 1, valign = "top", part = "body")
 	
 	# change font 
 	
@@ -689,9 +694,13 @@ report.doc.anova=function(table,title="Anova table",type.anova=3,doc=NULL,number
 
 
 
+#' @importFrom xtable xtable
+#' @rdname report.doc
+#' 
+#' @export 
 
 
-
+report.doc.anova.lme=report.doc.anova
 
 
 

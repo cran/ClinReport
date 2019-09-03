@@ -20,7 +20,7 @@
 #' @param drop.y Character. Indicates one or several levels of the y factor that you want to drop in the result
 #' @param drop.x1 Character. Indicates one or several levels of the x1 factor that you want to drop in the result
 #' @param drop.x2 Character. Indicates one or several levels of the x2 factor that you want to drop in the result
-#'@param remove.missing Logical. default to TRUE. If TRUE number of missing values are reported and percentages
+#' @param remove.missing Logical. default to TRUE. If TRUE number of missing values are reported and percentages
 #' take into account the number of missing value in the calculation. If set to FALSE, the missing values regarding the response factor y are ignored
 #' and percentages are computed on non missing values only.
 #' 
@@ -28,6 +28,7 @@
 #' Compute and report frequencies and percentages by levels of \code{y} (in rows) and by levels of \code{x1} (in columns)
 #' and \code{x2} in rows.
 #' 
+#' For more examples see the website: \href{https://jfrancoiscollin.github.io/ClinReport}{ClinReport website}
 #' 
 #' @details
 #' This function computes and reports qualitative statistics by level of \code{y} and by level of \code{x1} (if not null)
@@ -110,16 +111,14 @@ report.quali=function(data,y=NULL,x1=NULL,x2=NULL,y.label=y,
 #	at.row=NULL
 #	percent.col=T
 #	subjid=NULL
-#TODO: rajouter l'option drop.x1 et drop.x2 drop.missing
-# pour degager un ou plusieurs niveaux du facteur x1, x2 et/ou missing
-	
+
 	#checks on y and data arguments
 	
 	if(is.null(y)) stop("y argument cannot be NULL")
 	if(class(data)!="data.frame") stop("data argument should be a data.frame")
 	if(class(y)!="character") stop("y argument should be a character")
 	
-	y=check.x(data,y)
+	y=check.x(data,y,substitute=substitute(data))
 	
 	if(!is.null(x2))
 	{
@@ -197,11 +196,13 @@ report.quali=function(data,y=NULL,x1=NULL,x2=NULL,y.label=y,
 		
 		freq=report.quali(temp,y,x1="int",x2.label=x2.label,y.label=y.label,
 				x2="int",y.levels.label=y.levels.label,total=F,
-				,percent.col=percent.col,subjid=subjid,round=round,remove.missing=remove.missing)
+				,percent.col=percent.col,subjid=subjid,
+				round=round,remove.missing=remove.missing)
 		
 		freq$output=freq$output[,-1]
 		freq$x1=NULL
 		freq$x2=NULL
+		freq$at.row=NULL
 		
 		return(freq)
 	}
@@ -212,9 +213,11 @@ report.quali=function(data,y=NULL,x1=NULL,x2=NULL,y.label=y,
 		
 		temp=data
 		temp$int=as.factor(1)
-		freq=report.quali(temp,y,x1,x2="int",y.levels.label=y.levels.label,total=total,
+		freq=report.quali(temp,y,x1,x2="int",y.levels.label=y.levels.label,
+				total=total,
 				y.label=y.label,
-				,percent.col=percent.col,subjid=subjid,round=round,remove.missing=remove.missing)
+				,percent.col=percent.col,subjid=subjid,
+				round=round,remove.missing=remove.missing)
 		
 		freq$output=freq$output[,-1]
 		freq$x2=NULL
@@ -237,8 +240,8 @@ report.quali=function(data,y=NULL,x1=NULL,x2=NULL,y.label=y,
 	
 # check
 	
-	x1=check.x(data,x1)
-	x2=check.x(data,x2)
+	x1=check.x(data,x1,substitute=substitute(data))
+	x2=check.x(data,x2,substitute=substitute(data))
 	
 	
 	# check
@@ -436,7 +439,8 @@ report.quali=function(data,y=NULL,x1=NULL,x2=NULL,y.label=y,
 	freq=ClinReport::desc(output=freq,total=total,nbcol=nbcol,y=y,x1=x1,x2=x2,
 			at.row=at.row,
 			subjid=subjid,type.desc="quali",type=NULL,y.label=y.label,
-			raw.output=raw.freq,title=title)
+			raw.output=raw.freq,title=title	,y.levels.label=y.levels.label
+	)
 	
 	
 	return(freq)

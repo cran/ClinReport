@@ -1,6 +1,9 @@
 #' datafake
 #'
 #' Fictive data created only for the purpose of testing the package and showing examples.
+#' 
+#' @usage data(datafake)
+#' 
 #' @format A data frame
 #' \describe{
 #'   \item{y_numeric}{Fake numerical response}
@@ -21,6 +24,8 @@
 #' time_to_cure
 #'
 #' Simulated survival data created only for the purpose of testing the package and showing examples.
+#' 
+#' @usage data(time_to_cure)
 #'
 #' @format A data frame
 #' #' \describe{
@@ -37,3 +42,21 @@
 #' }
 #' 
 "time_to_cure"
+
+
+#' adverse_event
+#'
+#' Fake adverse event data example
+#' 
+#' @usage data(adverse_event)
+#'
+#' @format A data frame
+#' #' \describe{
+#' \item{SOCNAME}{Fake System Organ Class variable}
+#' \item{HLTNAME}{Fake factor}
+#' \item{PTNAME}{Fake Prefered Terms variable}
+#' \item{randtrt}{Fake treatment group factor}
+#' \item{SUBJID}{Fake subject Id}
+#' }
+#' 
+"adverse_event"

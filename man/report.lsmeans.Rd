@@ -45,7 +45,9 @@ report.lsmeans(lsm, at.row = NULL, infer = c(T, T), round = 2, x1,
 A desc object that can be used by the \code{report.doc} function.
 }
 \description{
-Creates a desc object for "LS Means" statistics reporting.
+Creates a desc object for "LS Means" statistics reporting. 
+
+For more examples see the website: \href{https://jfrancoiscollin.github.io/ClinReport}{ClinReport website}
 }
 \details{
 You can produce formatted Least Square Means table for up to 3 factors.
@@ -92,7 +94,7 @@ report.lsmeans(lsm=raw.lsm,at="TIMEPOINT")
 report.lsmeans(lsm=raw.lsm,at="TIMEPOINT",transpose=TRUE)
 
 
-# GLM model with specific contrast
+# LM model with specific contrast
 
 warp.lm <- lm(breaks ~ wool+tension+wool:tension, data = warpbreaks)
 warp.emm <- emmeans(warp.lm, ~ tension | wool)

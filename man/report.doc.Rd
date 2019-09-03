@@ -4,15 +4,22 @@
 \alias{report.doc}
 \alias{report.doc.desc}
 \alias{report.doc.anova}
+\alias{report.doc.anova.lme}
 \title{Export a statistical table into a 'Microsoft Word' or a R markdown document}
 \usage{
 report.doc(table, ...)
 
 \method{report.doc}{desc}(table, title = NULL, colspan.value = NULL,
   doc = NULL, init.numbering = F, numbering = T,
-  font.name = "Times", page.break = T, font.size = 10, ...)
+  font.name = "Times", page.break = T, font.size = 10, valign = F,
+  ...)
 
 \method{report.doc}{anova}(table, title = "Anova table",
+  type.anova = 3, doc = NULL, numbering = T, init.numbering = F,
+  font.name = "Times", font.size = 10, page.break = T,
+  pretty.label = FALSE, ...)
+
+\method{report.doc}{anova.lme}(table, title = "Anova table",
   type.anova = 3, doc = NULL, numbering = T, init.numbering = F,
   font.name = "Times", font.size = 10, page.break = T,
   pretty.label = FALSE, ...)
@@ -38,6 +45,8 @@ report.doc(table, ...)
 
 \item{font.size}{Numeric. Passed to \code{\link{fontsize}} function. Set the font size of the output in Word}
 
+\item{valign}{Logical. If TRUE it aligns vertically the levels of the merged cells in the first column}
+
 \item{type.anova}{Passed to \code{Anova} function from car package (see its documentation).}
 
 \item{pretty.label}{Logical. Default to FALSE. If TRUE, use the function \code{make.label} with default option on the rownames of the anova table}
@@ -53,6 +62,8 @@ This function enables to export the table created with \code{\link{report.quali}
 to a Microsoft Word or a R markdown document. 
 
 It's also possible to use report.doc to have a preview of the table in HTML format if the \code{doc} argument is NULL.
+
+For more examples see the website: \href{https://jfrancoiscollin.github.io/ClinReport}{ClinReport website}
 }
 \details{
 This function creates a flextable object from a desc object.
